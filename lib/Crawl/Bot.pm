@@ -119,4 +119,10 @@ sub tick {
     return $self->update_time;
 }
 
+before say => sub {
+    my $self = shift;
+    my %params = @_;
+    warn "sending '$params{body}' to $params{channel}";
+};
+
 1;
