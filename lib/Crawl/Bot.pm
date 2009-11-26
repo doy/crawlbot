@@ -90,7 +90,10 @@ sub tick {
         (my $id = $link) =~ s/.*=(\d+)$/$1/;
         return if $self->has_item($id);
         warn "New issue! ($id)";
-        $self->say(channel => '#doytest', body => $item->title . ' (' . $item->link . ')');
+        $self->say(
+            channel => '##crawl-dev',
+            body    => $item->title . ' (' . $item->link . ')'
+        );
         $self->add_item($id);
     });
     $self->save_cache;
