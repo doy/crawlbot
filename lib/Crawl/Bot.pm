@@ -28,6 +28,12 @@ has cache_file => (
     default => 'cache',
 );
 
+has update_time => (
+    is      => 'ro',
+    isa     => 'Int',
+    default => 300,
+);
+
 has issues => (
     traits  => ['Hash'],
     isa     => 'HashRef',
@@ -106,7 +112,7 @@ sub tick {
     });
     $self->save_cache;
 
-    return 60;
+    return $self->update_time;
 }
 
 1;
