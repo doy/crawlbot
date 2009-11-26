@@ -1,0 +1,14 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use lib 'lib';
+use Crawl::Bot;
+
+Crawl::Bot->new(
+    server   => 'leguin.freenode.net',
+    port     => '6667',
+    channels => ['#doytest'],
+    nick     => 'mantisbot',
+    username => 'mantisbot',
+    name     => 'mantisbot',
+)->run;
