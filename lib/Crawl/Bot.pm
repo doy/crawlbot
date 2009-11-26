@@ -28,44 +28,44 @@ has cache_file => (
     default => 'cache',
 );
 
-has items => (
+has issues => (
     traits  => ['Hash'],
     isa     => 'HashRef',
     default => sub {
         my $self = shift;
         my $file = $self->cache_file;
-        my $items = {};
+        my $issues = {};
         if (-r $file) {
-            warn "Updating seen item list from the cache...";
+            warn "Updating seen issue list from the cache...";
             open my $fh, '<', $file;
             while (<$fh>) {
                 chomp;
-                $items->{$_} = 1;
-                warn "  got item $_";
+                $issues->{$_} = 1;
+                warn "  got issue $_";
             }
         }
         else {
-            warn "Updating seen item list from a fresh copy of the feed...";
-            $self->each_item(sub {
-                my $item = shift;
-                my $link = $item->identifier;
+            warn "Updating seen issue list from a fresh copy of the feed...";
+            $self->each_issue(sub {
+                my $issue = shift;
+                my $link = $issue->identifier;
                 (my $id = $link) =~ s/.*=(\d+)$/$1/;
-                $items->{$id} = 1;
-                warn "  got item $id";
+                $issues->{$id} = 1;
+                warn "  got issue $id";
             });
         }
-        return $items;
+        return $issues;
     },
     handles => {
-        has_item  => 'exists',
-        items     => 'keys',
-        _add_item => 'set',
+        has_issue  => 'exists',
+        issues     => 'keys',
+        _add_issue => 'set',
     },
 );
 
-sub add_item {
+sub add_issue {
     my $self = shift;
-    $self->_add_item($_[0], 1);
+    $self->_add_issue($_[0], 1);
 }
 
 sub BUILD {
@@ -73,12 +73,12 @@ sub BUILD {
     $self->save_cache;
 }
 
-sub each_item {
+sub each_issue {
     my $self = shift;
     my ($code) = @_;
     my $rss = XML::RAI->parse_uri($self->rss_feed);
-    for my $item (@{ $rss->items }) {
-        $code->($item);
+    for my $issue (@{ $rss->items }) {
+        $code->($issue);
     }
 }
 
@@ -86,23 +86,23 @@ sub save_cache {
     my $self = shift;
     warn "Saving cache state to " . $self->cache_file;
     open my $fh, '>', $self->cache_file;
-    $fh->print("$_\n") for $self->items;
+    $fh->print("$_\n") for $self->issues;
 }
 
 sub tick {
     my $self = shift;
     warn "Checking for new issues...";
-    $self->each_item(sub {
-        my $item = shift;
-        my $link = $item->identifier;
+    $self->each_issue(sub {
+        my $issue = shift;
+        my $link = $issue->identifier;
         (my $id = $link) =~ s/.*=(\d+)$/$1/;
-        return if $self->has_item($id);
+        return if $self->has_issue($id);
         warn "New issue! ($id)";
         $self->say(
             channel => $_,
-            body    => $item->title . ' (' . $item->link . ')'
+            body    => $issue->title . ' (' . $issue->link . ')'
         ) for $self->channels;
-        $self->add_item($id);
+        $self->add_issue($id);
     });
     $self->save_cache;
 
