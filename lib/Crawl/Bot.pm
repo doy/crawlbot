@@ -104,13 +104,12 @@ sub tick {
         (my $id = $link) =~ s/.*=(\d+)$/$1/;
         return if $self->has_issue($id);
         warn "New issue! ($id)";
-        my $message = $issue->title;
-        $message =~ s/\d+: //;
-        $message = sprintf '%s (%s) by %s',
-                           $message, $issue->link, $issue->creator;
+        (my $title = $issue->title) =~ s/\d+: //;
+        my $link = $issue->link;
+        (my $user = $issue->creator) =~ s/ <.*?>$//;
         $self->say(
             channel => $_,
-            body    => $message,
+            body    => "$title ($link) by $user",
         ) for $self->channels;
         $self->add_issue($id);
     });
