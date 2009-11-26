@@ -107,6 +107,7 @@ sub tick {
         $self->say(
             channel => $_,
             body    => $issue->title . ' (' . $issue->link . ')'
+                     . ' by ' . $issue->creator
         ) for $self->channels;
         $self->add_issue($id);
     });
