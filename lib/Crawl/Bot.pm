@@ -6,6 +6,14 @@ extends 'Bot::BasicBot';
 use autodie;
 use XML::RAI;
 
+has [qw(username name)] => (
+    # don't need (or want) accessors, just want to initialize the hash slot
+    # for B::BB to use
+    is      => 'bare',
+    isa     => 'Str',
+    default => sub { shift->nick },
+);
+
 has rss_feed => (
     is      => 'ro',
     isa     => 'Str',
@@ -91,9 +99,9 @@ sub tick {
         return if $self->has_item($id);
         warn "New issue! ($id)";
         $self->say(
-            channel => '##crawl-dev',
+            channel => $_,
             body    => $item->title . ' (' . $item->link . ')'
-        );
+        ) for $self->channels;
         $self->add_item($id);
     });
     $self->save_cache;

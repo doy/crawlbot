@@ -8,6 +8,4 @@ Crawl::Bot->new(
     server   => 'irc.freenode.net',
     channels => ['##crawl-dev'],
     nick     => 'crawl-dev',
-    username => 'crawl-dev',
-    name     => 'crawl-dev',
 )->run;
