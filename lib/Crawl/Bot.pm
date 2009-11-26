@@ -100,8 +100,7 @@ sub tick {
     warn "Checking for new issues...";
     $self->each_issue(sub {
         my $issue = shift;
-        my $link = $issue->identifier;
-        (my $id = $link) =~ s/.*=(\d+)$/$1/;
+        (my $id = $issue->identifier) =~ s/.*=(\d+)$/$1/;
         return if $self->has_issue($id);
         warn "New issue! ($id)";
         (my $title = $issue->title) =~ s/\d+: //;
