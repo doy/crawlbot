@@ -5,10 +5,9 @@ use lib 'lib';
 use Crawl::Bot;
 
 Crawl::Bot->new(
-    server   => 'leguin.freenode.net',
-    port     => '6667',
-    channels => ['#doytest'],
-    nick     => 'mantisbot',
-    username => 'mantisbot',
-    name     => 'mantisbot',
+    server   => 'irc.freenode.net',
+    channels => ['##crawl-dev'],
+    nick     => 'crawl-dev',
+    username => 'crawl-dev',
+    name     => 'crawl-dev',
 )->run;
