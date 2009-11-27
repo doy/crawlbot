@@ -39,7 +39,7 @@ has mantis => (
 
 sub BUILD {
     my $self = shift;
-    File::Path::make_path($self->data_dir);
+    File::Path::mkpath($self->data_dir);
     $self->mantis;
 }
 
