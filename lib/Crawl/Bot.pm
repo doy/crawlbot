@@ -3,8 +3,7 @@ use Moose;
 use MooseX::NonMoose;
 extends 'Bot::BasicBot';
 
-use autodie;
-use XML::RAI;
+use File::Path;
 
 has [qw(username name)] => (
     # don't need (or want) accessors, just want to initialize the hash slot
@@ -14,18 +13,11 @@ has [qw(username name)] => (
     default => sub { shift->nick },
 );
 
-has rss_feed => (
+has data_dir => (
     is      => 'ro',
     isa     => 'Str',
     lazy    => 1,
-    default => 'http://crawl.develz.org/mantis/issues_rss.php',
-);
-
-has cache_file => (
-    is      => 'ro',
-    isa     => 'Str',
-    lazy    => 1,
-    default => 'cache',
+    default => 'dat',
 );
 
 has update_time => (
@@ -34,87 +26,21 @@ has update_time => (
     default => 300,
 );
 
-has issues => (
-    traits  => ['Hash'],
-    isa     => 'HashRef',
+has mantis => (
+    is      => 'ro',
+    isa     => 'Crawl::Bot::Mantis',
+    lazy    => 1,
     default => sub {
         my $self = shift;
-        my $file = $self->cache_file;
-        my $issues = {};
-        if (-r $file) {
-            warn "Updating seen issue list from the cache...";
-            open my $fh, '<', $file;
-            while (<$fh>) {
-                chomp;
-                $issues->{$_} = 1;
-                warn "  got issue $_";
-            }
-        }
-        else {
-            warn "Updating seen issue list from a fresh copy of the feed...";
-            $self->each_issue(sub {
-                my $issue = shift;
-                my $link = $issue->identifier;
-                (my $id = $link) =~ s/.*=(\d+)$/$1/;
-                $issues->{$id} = 1;
-                warn "  got issue $id";
-            });
-        }
-        return $issues;
-    },
-    handles => {
-        has_issue  => 'exists',
-        issues     => 'keys',
-        _add_issue => 'set',
+        require Crawl::Bot::Mantis;
+        Crawl::Bot::Mantis->new(bot => $self);
     },
 );
 
-sub add_issue {
-    my $self = shift;
-    $self->_add_issue($_[0], 1);
-}
-
 sub BUILD {
     my $self = shift;
-    $self->save_cache;
-}
-
-sub each_issue {
-    my $self = shift;
-    my ($code) = @_;
-    my $rss = XML::RAI->parse_uri($self->rss_feed);
-    for my $issue (@{ $rss->items }) {
-        $code->($issue);
-    }
-}
-
-sub save_cache {
-    my $self = shift;
-    warn "Saving cache state to " . $self->cache_file;
-    open my $fh, '>', $self->cache_file;
-    $fh->print("$_\n") for $self->issues;
-}
-
-sub tick {
-    my $self = shift;
-    warn "Checking for new issues...";
-    $self->each_issue(sub {
-        my $issue = shift;
-        (my $id = $issue->identifier) =~ s/.*=(\d+)$/$1/;
-        return if $self->has_issue($id);
-        warn "New issue! ($id)";
-        (my $title = $issue->title) =~ s/\d+: //;
-        my $link = $issue->link;
-        (my $user = $issue->creator) =~ s/ <.*?>$//;
-        $self->say(
-            channel => $_,
-            body    => "$title ($link) by $user",
-        ) for $self->channels;
-        $self->add_issue($id);
-    });
-    $self->save_cache;
-
-    return $self->update_time;
+    File::Path::make_path($self->data_dir);
+    $self->mantis;
 }
 
 before say => sub {
@@ -122,5 +48,11 @@ before say => sub {
     my %params = @_;
     warn "sending '$params{body}' to $params{channel}";
 };
+
+sub tick {
+    my $self = shift;
+    $self->mantis->tick;
+    return $self->update_time;
+}
 
 1;
