@@ -4,6 +4,10 @@ use MooseX::NonMoose;
 extends 'Bot::BasicBot';
 
 use File::Path;
+use Module::Pluggable (
+    instantiate => 'new',
+    sub_name    => 'create_plugins',
+);
 
 has [qw(username name)] => (
     # don't need (or want) accessors, just want to initialize the hash slot
@@ -26,33 +30,17 @@ has update_time => (
     default => 300,
 );
 
-has mantis => (
+has plugins => (
     is      => 'ro',
-    isa     => 'Crawl::Bot::Mantis',
+    isa     => 'ArrayRef[Crawl::Bot::Plugin]',
     lazy    => 1,
-    default => sub {
-        my $self = shift;
-        require Crawl::Bot::Mantis;
-        Crawl::Bot::Mantis->new(bot => $self);
-    },
-);
-
-has wiki => (
-    is      => 'ro',
-    isa     => 'Crawl::Bot::Wiki',
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        require Crawl::Bot::Wiki;
-        Crawl::Bot::Wiki->new(bot => $self);
-    },
+    default => sub { [__PACKAGE__->create_plugins(bot => shift)] },
 );
 
 sub BUILD {
     my $self = shift;
     File::Path::mkpath($self->data_dir);
-    $self->mantis;
-    $self->wiki;
+    $self->plugins;
 }
 
 before say => sub {
@@ -63,8 +51,7 @@ before say => sub {
 
 sub tick {
     my $self = shift;
-    $self->mantis->tick;
-    $self->wiki->tick;
+    $_->tick for @{ $self->plugins };
     return $self->update_time;
 }
 

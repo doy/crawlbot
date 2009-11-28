@@ -1,15 +1,7 @@
-package Crawl::Bot::Wiki;
+package Crawl::Bot::Plugin::Wiki;
 use Moose;
 
 use XML::RPC;
-
-has bot => (
-    is       => 'ro',
-    isa      => 'Crawl::Bot',
-    required => 1,
-    weak_ref => 1,
-    handles  => [qw(say_all)],
-);
 
 has xmlrpc_location => (
     is      => 'ro',

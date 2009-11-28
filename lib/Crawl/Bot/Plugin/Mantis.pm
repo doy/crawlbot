@@ -1,17 +1,10 @@
-package Crawl::Bot::Mantis;
+package Crawl::Bot::Plugin::Mantis;
 use Moose;
+extends 'Crawl::Bot::Plugin';
 
 use autodie;
 use File::Spec;
 use XML::RAI;
-
-has bot => (
-    is       => 'ro',
-    isa      => 'Crawl::Bot',
-    required => 1,
-    weak_ref => 1,
-    handles  => [qw(say_all data_dir)],
-);
 
 has rss_feed => (
     is      => 'ro',
