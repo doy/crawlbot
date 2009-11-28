@@ -68,4 +68,13 @@ sub tick {
     return $self->update_time;
 }
 
+sub say_all {
+    my $self = shift;
+    my ($message) = @_;
+    $self->say(
+        channel => $_,
+        body    => $message,
+    ) for $self->channels;
+}
+
 1;

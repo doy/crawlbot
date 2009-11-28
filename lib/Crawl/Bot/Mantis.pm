@@ -10,7 +10,7 @@ has bot => (
     isa      => 'Crawl::Bot',
     required => 1,
     weak_ref => 1,
-    handles  => [qw(say channels data_dir)],
+    handles  => [qw(say_all data_dir)],
 );
 
 has rss_feed => (
@@ -101,10 +101,7 @@ sub tick {
         (my $title = $issue->title) =~ s/\d+: //;
         my $link = $issue->link;
         (my $user = $issue->creator) =~ s/ <.*?>$//;
-        $self->say(
-            channel => $_,
-            body    => "$title ($link) by $user",
-        ) for $self->channels;
+        $self->say_all("$title ($link) by $user");
         $self->add_issue($id);
     });
     $self->save_cache;

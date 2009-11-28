@@ -8,7 +8,7 @@ has bot => (
     isa      => 'Crawl::Bot',
     required => 1,
     weak_ref => 1,
-    handles  => [qw(say channels)],
+    handles  => [qw(say_all)],
 );
 
 has xmlrpc_location => (
@@ -49,11 +49,8 @@ sub tick {
         if ($page =~ /(===?=?=?=?) (.*) \1/) {
             $name = $2;
         }
-        $self->say(
-            channel => $_,
-            body    => "$change->{author} created page $name at "
-                     . $self->wiki_base . "$change->{name}",
-        ) for $self->channels;
+        $self->say_all("$change->{author} created page $name at "
+                     . $self->wiki_base . "$change->{name}");
     }
 }
 
