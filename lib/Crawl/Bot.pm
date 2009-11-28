@@ -37,10 +37,22 @@ has mantis => (
     },
 );
 
+has wiki => (
+    is      => 'ro',
+    isa     => 'Crawl::Bot::Wiki',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        require Crawl::Bot::Wiki;
+        Crawl::Bot::Wiki->new(bot => $self);
+    },
+);
+
 sub BUILD {
     my $self = shift;
     File::Path::mkpath($self->data_dir);
     $self->mantis;
+    $self->wiki;
 }
 
 before say => sub {
@@ -52,6 +64,7 @@ before say => sub {
 sub tick {
     my $self = shift;
     $self->mantis->tick;
+    $self->wiki->tick;
     return $self->update_time;
 }
 
