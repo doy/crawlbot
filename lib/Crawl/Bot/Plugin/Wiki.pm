@@ -1,5 +1,6 @@
 package Crawl::Bot::Plugin::Wiki;
 use Moose;
+extends 'Crawl::Bot::Plugin';
 
 use XML::RPC;
 
