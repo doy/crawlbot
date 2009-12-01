@@ -32,6 +32,8 @@ sub tick {
     my $xmlrpc = XML::RPC->new($self->xmlrpc_location);
     warn "Getting recent wiki changes...";
     my $changes = $xmlrpc->call('wiki.getRecentChanges', $last_checked);
+    # ->call returns a hashref with error info on failure
+    return unless ref($changes) eq 'ARRAY';
     for my $change (@$changes) {
         warn "Page $change->{name} changed";
         my $history = $xmlrpc->call('wiki.getPageVersions', $change->{name}, 0);
