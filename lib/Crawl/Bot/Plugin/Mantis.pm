@@ -1,6 +1,7 @@
 package Crawl::Bot::Plugin::Mantis;
 use Moose;
 extends 'Crawl::Bot::Plugin';
+
 with 'Crawl::Bot::Role::RSS';
 
 sub rss_feed { 'http://crawl.develz.org/mantis/issues_rss.php' }
