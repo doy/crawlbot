@@ -10,7 +10,15 @@ requires 'rss_feed';
 sub current_items {
     my $self = shift;
     my $rss = XML::RAI->parse_uri($self->rss_feed);
-    return @{ $rss->items };
+    # after the XML::RAI object goes out of scope, the item objects become
+    # worthless. how dumb. capture the relevant data in some hashrefs instead.
+    return map {
+        my $item = $_;
+        +{
+            map { $_ => $item->$_ }
+                qw(identifier title link creator)
+         }
+    } @{ $rss->items };
 }
 
 no Moose::Role;
