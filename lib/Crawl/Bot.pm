@@ -47,7 +47,7 @@ before say => sub {
     my $self = shift;
     my %params = @_;
     warn "sending '$params{body}' to $params{channel}";
-    $self->sent({%params, who => $self->nick}) for @{ $self->plugins };
+    $_->sent({%params, who => $self->nick}) for @{ $self->plugins };
 };
 
 sub tick {
