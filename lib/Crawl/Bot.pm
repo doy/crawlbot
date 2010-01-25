@@ -57,6 +57,14 @@ sub tick {
     return $self->update_time;
 }
 
+for my $meth (qw(said         emoted   chanjoin  chanpart
+                 nick_change  kicked   topic     userquit)) {
+    __PACKAGE__->meta->add_method($meth => sub {
+        my $self = shift;
+        $_->$meth(@_) for @{ $self->plugins };
+    });
+}
+
 sub say_all {
     my $self = shift;
     my ($message) = @_;
