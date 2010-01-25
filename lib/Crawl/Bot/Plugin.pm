@@ -19,6 +19,7 @@ sub nick_change { }
 sub kicked { }
 sub topic { }
 sub userquit { }
+sub sent { }
 
 __PACKAGE__->meta->make_immutable;
 no Moose;

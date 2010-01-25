@@ -130,4 +130,12 @@ sub userquit {
     return;
 }
 
+sub sent {
+    my $self = shift;
+    my ($args) = @_;
+
+    $self->log_message("<$args->{who}> $args->{body}");
+    return;
+}
+
 1;
