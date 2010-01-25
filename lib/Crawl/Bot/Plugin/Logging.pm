@@ -98,9 +98,10 @@ sub chanpart {
 
 sub nick_change {
     my $self = shift;
-    my ($args) = @_;
+    # bleh... uses different arg format
+    my ($old, $new) = @_;
 
-    $self->log_message("-!- $args->{from} is now known as $args->{to}");
+    $self->log_message("-!- $old is now known as $new");
     return;
 }
 
