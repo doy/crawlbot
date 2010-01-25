@@ -4,6 +4,9 @@ extends 'Crawl::Bot::Plugin';
 
 use autodie;
 
+# XXX: only supports one channel at the moment
+# XXX: should strip out mirc color codes from the logs
+
 has date => (
     is      => 'ro',
     isa     => 'Str',
