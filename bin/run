@@ -7,5 +7,5 @@ use Crawl::Bot;
 Crawl::Bot->new(
     server   => 'irc.freenode.net',
     channels => ['##crawl-dev'],
-    nick     => 'crawl-dev',
+    nick     => 'Ashenzari',
 )->run;
