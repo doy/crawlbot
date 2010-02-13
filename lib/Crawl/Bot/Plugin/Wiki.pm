@@ -3,6 +3,7 @@ use Moose;
 extends 'Crawl::Bot::Plugin';
 
 use XML::RPC;
+use Try::Tiny;
 
 has xmlrpc_location => (
     is      => 'ro',
@@ -31,16 +32,17 @@ sub tick {
 
     my $xmlrpc = XML::RPC->new($self->xmlrpc_location);
     warn "Getting recent wiki changes...";
-    my $changes = $xmlrpc->call('wiki.getRecentChanges', $last_checked);
+    my $changes = try { $xmlrpc->call('wiki.getRecentChanges', $last_checked) } catch { warn $_ };
     # ->call returns a hashref with error info on failure
     return unless ref($changes) eq 'ARRAY';
     for my $change (@$changes) {
         warn "Page $change->{name} changed";
-        my $history = $xmlrpc->call('wiki.getPageVersions', $change->{name}, 0);
-        next if @$history;
+        my $history = try { $xmlrpc->call('wiki.getPageVersions', $change->{name}, 0) } catch { warn $_ };
+        next if !defined($history) || @$history;
         warn "Page $change->{name} is new!";
         my $name = $change->{name};
-        my $page = $xmlrpc->call('wiki.getPage', $change->{name});
+        my $page = try { $xmlrpc->call('wiki.getPage', $change->{name}) } catch { warn $_ };
+        next unless $page;
         if ($page =~ /(===?=?=?=?) (.*) \1/) {
             $name = $2;
         }
