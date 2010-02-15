@@ -86,7 +86,7 @@ sub parse_commit {
     my ($rev) = @_;
     my $dir = pushd($self->checkout);
     my $info = `git log -1 --pretty=format:%aN%x00%s%x00%b%x00 $rev`;
-    $info =~ /(.*?)\x00(.*?)\x00(.*?)\x00(.*?)/s;
+    $info =~ /(.*?)\x00(.*?)\x00(.*?)\x00(.*)/s;
     my ($author, $subject, $body, $stat) = ($1, $2, $3, $4);
     $stat =~ s/(\d+) files changed/$1/;
     return {
