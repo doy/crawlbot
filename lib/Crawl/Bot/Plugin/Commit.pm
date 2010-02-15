@@ -7,7 +7,7 @@ extends 'Crawl::Bot::Plugin';
 has repo_uri => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'git://crawl-ref.git.sourceforge.net/gitroot/crawl-ref/crawl-ref ',
+    default => 'git://crawl-ref.git.sourceforge.net/gitroot/crawl-ref/crawl-ref',
 );
 
 has checkout => (
@@ -20,10 +20,10 @@ has checkout => (
         mkdir $checkout unless -d $checkout;
         my $dir = pushd($checkout);
         if (-f 'HEAD') {
-            system('git fetch ' . $self->repo_uri);
+            system('git fetch');
         }
         else {
-            system('git clone --bare ' . $self->repo_uri . " $checkout");
+            system('git clone --mirror ' . $self->repo_uri . " $checkout");
         }
         $checkout;
     },
@@ -47,10 +47,11 @@ has heads => (
 sub tick {
     my $self = shift;
     my $dir = pushd($self->checkout);
-    system('git fetch ' . $self->repo_uri);
+    system('git fetch');
     for my $branch ($self->branches) {
         my $old_head = $self->head($branch) || '';
         my $head = `git rev-parse $branch`;
+        chomp ($old_head, $head);
         next if $old_head eq $head;
 
         if (!$self->has_branch($branch)) {
@@ -63,7 +64,8 @@ sub tick {
         my $cherry_picks = @revs;
         @revs = grep { $commits{$_}->{body} !~ /\(cherry picked from / } @revs;
         $cherry_picks -= @revs;
-        $self->say_all("Cherry-picked $cherry_picks commits into $branch");
+        $self->say_all("Cherry-picked $cherry_picks commits into $branch")
+            if $cherry_picks > 0;
 
         for my $rev (@revs) {
             my $commit = $commits{$rev};
@@ -83,6 +85,7 @@ sub branches {
 sub parse_commit {
     my $self = shift;
     my ($rev) = @_;
+    my $dir = pushd($self->checkout);
     my $info = `git log -1 --pretty=format:%aN%x00%s%x00%b%x00 $rev`;
     $info =~ /(.*?)\0(.*?)\0(.*?)\0(.*?)/;
     my ($author, $subject, $body, $stat) = ($1, $2, $3, $4);
