@@ -21,7 +21,9 @@ has data_dir => (
     is      => 'ro',
     isa     => 'Str',
     lazy    => 1,
-    default => 'dat',
+    default => sub {
+        return File::Spec->rel2abs('dat');
+    },
 );
 
 has update_time => (
