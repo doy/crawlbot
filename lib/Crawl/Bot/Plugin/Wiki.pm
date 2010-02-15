@@ -31,7 +31,6 @@ sub tick {
     return unless $last_checked;
 
     my $xmlrpc = XML::RPC->new($self->xmlrpc_location);
-    warn "Getting recent wiki changes...";
     my $changes = try { $xmlrpc->call('wiki.getRecentChanges', $last_checked) } catch { warn $_ };
     # ->call returns a hashref with error info on failure
     return unless ref($changes) eq 'ARRAY';
