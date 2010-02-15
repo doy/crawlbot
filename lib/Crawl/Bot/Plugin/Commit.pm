@@ -19,10 +19,7 @@ has checkout => (
         my $checkout = File::Spec->catdir($self->data_dir, 'crawl-ref');
         mkdir $checkout unless -d $checkout;
         my $dir = pushd($checkout);
-        if (-f 'HEAD') {
-            system('git fetch');
-        }
-        else {
+        if (!-f 'HEAD') {
             system('git clone --mirror ' . $self->repo_uri . " $checkout");
         }
         $checkout;
