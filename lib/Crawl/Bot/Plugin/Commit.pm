@@ -69,7 +69,8 @@ sub tick {
 
         for my $rev (@revs) {
             my $commit = $commits{$rev};
-            $self->say_all("$commit->{author} * r$rev ($commit->{nfiles} changed): $commit->{subject}");
+            my $abbr = substr($rev, 0, 12);
+            $self->say_all("$commit->{author} * r$abbr ($commit->{nfiles} changed): $commit->{subject}");
         }
 
         $self->head($branch => $head);
@@ -87,9 +88,9 @@ sub parse_commit {
     my ($rev) = @_;
     my $dir = pushd($self->checkout);
     my $info = `git log -1 --pretty=format:%aN%x00%s%x00%b%x00 $rev`;
-    $info =~ /(.*?)\0(.*?)\0(.*?)\0(.*?)/;
+    $info =~ /(.*?)\x00(.*?)\x00(.*?)\x00(.*?)/s;
     my ($author, $subject, $body, $stat) = ($1, $2, $3, $4);
-    $stat =~ s/(\d+) files changed//;
+    $stat =~ s/(\d+) files changed/$1/;
     return {
         author  => $author,
         subject => $subject,
