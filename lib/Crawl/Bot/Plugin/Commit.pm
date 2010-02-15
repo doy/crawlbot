@@ -59,7 +59,8 @@ sub tick {
         my %commits = map { $_, $self->parse_commit($_) } @revs;
 
         my $cherry_picks = @revs;
-        @revs = grep { $commits{$_}->{body} !~ /\(cherry picked from / } @revs;
+        @revs = grep { $commits{$_}->{subject} !~ /\(cherry picked from /
+                    && $commits{$_}->{body}    !~ /\(cherry picked from / } @revs;
         $cherry_picks -= @revs;
         $self->say_all("Cherry-picked $cherry_picks commits into $branch")
             if $cherry_picks > 0;
