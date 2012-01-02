@@ -7,7 +7,7 @@ extends 'Crawl::Bot::Plugin';
 has repo_uri => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'git://crawl-ref.git.sourceforge.net/gitroot/crawl-ref/crawl-ref',
+    default => 'git://gitorious.org/crawl/crawl.git',
 );
 
 has checkout => (
