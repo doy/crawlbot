@@ -51,25 +51,28 @@ sub tick {
         chomp ($old_head, $head);
         next if $old_head eq $head;
 
-        if (!$self->has_branch($branch)) {
-            $self->say_all("New branch created: $branch");
-        }
-
         my @revs = split /\n/, `git rev-list $old_head..$head`;
-        my %commits = map { $_, $self->parse_commit($_) } @revs;
 
-        my $cherry_picks = @revs;
-        @revs = grep { $commits{$_}->{subject} !~ /\(cherry picked from /
-                    && $commits{$_}->{body}    !~ /\(cherry picked from / } @revs;
-        $cherry_picks -= @revs;
-        $self->say_all("Cherry-picked $cherry_picks commits into $branch")
-            if $cherry_picks > 0;
-
-        for my $rev (@revs) {
-            my $commit = $commits{$rev};
-            my $abbr = substr($rev, 0, 12);
-            $self->say_all("$commit->{author} * r$abbr ($commit->{nfiles} changed): $commit->{subject}");
+        if (!$self->has_branch($branch)) {
+            my $nrev = scalar @revs;
+            $self->say_all("New branch created: $branch ($nrev commits)");
         }
+
+#        my %commits = map { $_, $self->parse_commit($_) } @revs;
+#
+#        my $cherry_picks = @revs;
+#        @revs = grep { $commits{$_}->{subject} !~ /\(cherry picked from /
+#                    && $commits{$_}->{body}    !~ /\(cherry picked from / } @revs;
+#        $cherry_picks -= @revs;
+#        $self->say_all("Cherry-picked $cherry_picks commits into $branch")
+#            if $cherry_picks > 0;
+#
+#        for my $rev (@revs) {
+#            my $commit = $commits{$rev};
+#            my $abbr = substr($rev, 0, 12);
+#            my $br = $branch eq "master" ? "" : "$branch ";
+#            $self->say_all("$commit->{author} $br* r$abbr ($commit->{nfiles} changed): $commit->{subject}");
+#        }
 
         $self->head($branch => $head);
     }
