@@ -14,6 +14,15 @@ sub item_to_id {
     return $id;
 }
 
+sub said {
+    my $self = shift;
+    my ($args) = @_;
+
+    if ($args->{body} =~ /^%bug (\d+)$/) {
+        $self->say_all("https://crawl.develz.org/mantis/view.php?id=$1");
+    }
+}
+
 sub tick {
     my $self = shift;
     $self->each_current_item(sub {
