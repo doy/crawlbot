@@ -41,6 +41,27 @@ has heads => (
     },
 );
 
+sub said {
+    my $self = shift;
+    my ($args) = @_;
+
+    if ($args->{body} =~ /^%git(?:\s+(.*))?$/) {
+        my $rev = $1;
+        $rev = "HEAD" unless $rev;
+        my $commit = $self->parse_commit($rev);
+        if (defined $commit) {
+            my $abbr = substr($commit->{hash}, 0, 12);
+            my $pl = ($commit->{nfiles} == 1 ? "" : "s");
+
+            $self->say_all("$commit->{author} * r$abbr: $commit->{subject} "
+                . "($commit->{date}, $commit->{nfiles} file$pl, $commit->{nins}+ $commit->{ndel}-)");
+        } else {
+            my $ev = $? >> 8;
+            $self->say_all("Could not find commit $rev (git returned $ev)");
+        }
+    }
+}
+
 sub tick {
     my $self = shift;
     my $dir = pushd($self->checkout);
@@ -88,15 +109,28 @@ sub parse_commit {
     my $self = shift;
     my ($rev) = @_;
     my $dir = pushd($self->checkout);
-    my $info = `git log -1 --pretty=format:%aN%x00%s%x00%b%x00 $rev`;
-    $info =~ /(.*?)\x00(.*?)\x00(.*?)\x00(.*)/s;
-    my ($author, $subject, $body, $stat) = ($1, $2, $3, $4);
-    $stat =~ s/(\d+) files changed/$1/;
+
+    CORE::open(F, "-|", qw(git log -1 --shortstat --pretty=format:%H%x00%aN%x00%s%x00%b%x00%ar%x00), $rev) or return undef;
+    local $/ = undef;
+    my $info = <F>;
+    CORE::close(F) or return undef;
+
+    $info =~ /(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*)/s or return undef;
+    my ($hash, $author, $subject, $body, $date, $stat) = ($1, $2, $3, $4, $5, $6);
+
+    my ($nfiles, $nins, $ndel);
+    ($stat =~ /(\d+) files changed/) and $nfiles = $1;
+    ($stat =~ /(\d+) insertions/) and $nins = $1;
+    ($stat =~ /(\d+) deletions/) and $ndel = $1;
     return {
+        hash    => $hash,
         author  => $author,
         subject => $subject,
         body    => $body,
-        nfiles  => $stat,
+        date    => $date,
+        nfiles  => $nfiles,
+        nins    => $nins,
+        ndel    => $ndel,
     };
 }
 
