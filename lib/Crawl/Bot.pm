@@ -65,6 +65,7 @@ for my $meth (qw(said         emoted   chanjoin  chanpart
     __PACKAGE__->meta->add_method($meth => sub {
         my $self = shift;
         $_->$meth(@_) for @{ $self->plugins };
+        undef;
     });
 }
 
