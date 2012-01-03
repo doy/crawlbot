@@ -45,6 +45,8 @@ sub said {
     my $self = shift;
     my ($args) = @_;
 
+    my @keys = (who => $args->{who}, channel => $args->{channel}, "body");
+
     if ($args->{body} =~ /^%git(?:\s+(.*))?$/) {
         my $rev = $1;
         $rev = "HEAD" unless $rev;
@@ -53,11 +55,13 @@ sub said {
             my $abbr = substr($commit->{hash}, 0, 12);
             my $pl = ($commit->{nfiles} == 1 ? "" : "s");
 
-            $self->say_all("$commit->{author} * r$abbr: $commit->{subject} "
-                . "($commit->{date}, $commit->{nfiles} file$pl, $commit->{nins}+ $commit->{ndel}-)");
+            $self->say(@keys, "$commit->{author} * r$abbr: $commit->{subject} "
+                . "($commit->{date}, $commit->{nfiles} file$pl, "
+                . "$commit->{nins}+ $commit->{ndel}-)"
+            );
         } else {
             my $ev = $? >> 8;
-            $self->say_all("Could not find commit $rev (git returned $ev)");
+            $self->say(@keys, "Could not find commit $rev (git returned $ev)");
         }
     }
 }

@@ -17,9 +17,11 @@ sub item_to_id {
 sub said {
     my $self = shift;
     my ($args) = @_;
+    
+    my @keys = (who => $args->{who}, channel => $args->{channel}, "body");
 
     if ($args->{body} =~ /^%bug (\d+)$/) {
-        $self->say_all("https://crawl.develz.org/mantis/view.php?id=$1");
+        $self->say(@keys, "https://crawl.develz.org/mantis/view.php?id=$1");
     }
 }
 
