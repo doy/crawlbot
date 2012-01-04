@@ -2,6 +2,7 @@ package Crawl::Bot::Plugin::Wiki;
 use Moose;
 extends 'Crawl::Bot::Plugin';
 
+use LWP::UserAgent;
 use XML::RPC;
 use Try::Tiny;
 
@@ -59,11 +60,17 @@ sub tick {
     $self->last_checked(time);
     return unless $last_checked;
 
-    my $xmlrpc = XML::RPC->new($self->xmlrpc_location);
+    # Make sure we (temporarily) save cookies, since the login method sets
+    # cookies that the other methods will need.
+    my $xmlrpc = XML::RPC->new(
+        $self->xmlrpc_location,
+        lwp_useragent => LWP::UserAgent->new(cookie_jar => {}),
+    );
+
     try { $self->login_wiki($xmlrpc); } catch { warn $_; return undef; };
 
     my $changes = try {
-	    $xmlrpc->call('wiki.getRecentChanges', $last_checked)
+        $xmlrpc->call('wiki.getRecentChanges', $last_checked)
     } catch { warn $_ };
 
     # ->call returns a hashref with error info on failure
