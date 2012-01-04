@@ -9,7 +9,7 @@ has xmlrpc_location => (
     is      => 'ro',
     isa     => 'Str',
     lazy    => 1,
-    default => 'http://crawl.develz.org/wiki/lib/exe/xmlrpc.php',
+    default => 'https://crawl.develz.org/wiki/lib/exe/xmlrpc.php',
 );
 
 has wiki_base => (
@@ -24,14 +24,48 @@ has last_checked => (
     isa => 'Int',
 );
 
+sub login_file_name {
+    my $self = shift;
+
+    return File::Spec->catfile($self->data_dir, 'wiki_login');
+}
+
+sub login_wiki {
+    my $self = shift;
+    my $xmlrpc = shift;
+    my ($user, $pass);
+
+    local $_;
+    open my $lf, "<", $self->login_file_name
+        or die "could not open wiki_login file: $!";
+
+    while (<$lf>) {
+        chomp;
+        /^\s*user\s*=\s*(.*?)\s*$/ and $user = $1;
+        /^\s*password\s*=\s*(.*?)\s*$/ and $pass = $1;
+    }
+
+    die "no login info for wiki" unless defined $user and defined $pass;
+
+    warn "logging in to wiki";
+    $xmlrpc->call('dokuwiki.login', $user, $pass);
+    return;
+}
+
 sub tick {
+    local $_;
     my $self = shift;
     my $last_checked = $self->last_checked;
     $self->last_checked(time);
     return unless $last_checked;
 
     my $xmlrpc = XML::RPC->new($self->xmlrpc_location);
-    my $changes = try { $xmlrpc->call('wiki.getRecentChanges', $last_checked) } catch { warn $_ };
+    try { $self->login_wiki($xmlrpc); } catch { warn $_; return undef; };
+
+    my $changes = try {
+	    $xmlrpc->call('wiki.getRecentChanges', $last_checked)
+    } catch { warn $_ };
+
     # ->call returns a hashref with error info on failure
     return unless ref($changes) eq 'ARRAY';
     for my $change (@$changes) {
@@ -48,6 +82,7 @@ sub tick {
         $self->say_all("$change->{author} created page $name at "
                      . $self->wiki_base . "$change->{name}");
     }
+    return;
 }
 
 __PACKAGE__->meta->make_immutable;
