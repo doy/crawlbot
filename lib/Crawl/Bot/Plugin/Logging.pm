@@ -68,7 +68,9 @@ sub said {
     my $self = shift;
     my ($args) = @_;
 
-    $self->log_message("<$args->{who}> $args->{body}");
+    unless ($args->{channel} eq 'message') {
+	    $self->log_message("<$args->{who}> $args->{body}");
+    }
     return;
 }
 
