@@ -140,7 +140,9 @@ sub sent {
     my $self = shift;
     my ($args) = @_;
 
-    $self->log_message("<$args->{who}> $args->{body}");
+    unless ($args->{channel} eq 'msg') {
+        $self->log_message("<$args->{who}> $args->{body}");
+    }
     return;
 }
 
