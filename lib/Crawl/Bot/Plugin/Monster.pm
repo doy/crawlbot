@@ -29,7 +29,7 @@ sub get_monster_info {
     CORE::open(F, "-|", "bin/monster-trunk", $monster) or return undef;
     local $/ = undef;
     my $resp = <F>;
-    CORE::close(F) or return undef;
+    CORE::close(F);
 
     return $resp;
 }
