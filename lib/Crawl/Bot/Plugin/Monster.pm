@@ -12,12 +12,13 @@ sub said {
     my ($args) = @_;
     my @keys = (who => $args->{who}, channel => $args->{channel}, "body");
 
-    if ($args->{body} =~ /^%\?\? *(.*)/) {
-        my $resp = $self->get_monster_info($1);
+    if ($args->{body} =~ /^%(\?\??) *(.*)/) {
+        my $branch = ($1 eq "??") ? "trunk" : "stable";
+        my $resp = $self->get_monster_info($2, $branch);
         if ($resp) {
             $self->say(@keys, $resp);
         } else {
-            $self->say(@keys, "Error calling monster-trunk: $!")
+            $self->say(@keys, "Error calling monster-$branch: $!")
         }
     }
 }
@@ -25,8 +26,11 @@ sub said {
 sub get_monster_info {
     my $self = shift;
     my $monster = shift;
+    my $branch = shift;
 
-    CORE::open(F, "-|", "bin/monster-trunk", $monster) or return undef;
+    return "Error: Bad branch $branch\n" unless $branch =~ /^(trunk|stable)$/;
+
+    CORE::open(F, "-|", "bin/monster-$branch", $monster) or return undef;
     local $/ = undef;
     my $resp = <F>;
     CORE::close(F);
