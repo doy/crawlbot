@@ -39,6 +39,12 @@ has plugins => (
     default => sub { [__PACKAGE__->create_plugins(bot => shift)] },
 );
 
+has max_length => (
+    is      => 'ro',
+    isa     => 'Int',
+    default => 410
+);
+
 sub BUILD {
     my $self = shift;
     File::Path::mkpath($self->data_dir);
