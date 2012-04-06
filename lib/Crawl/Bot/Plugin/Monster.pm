@@ -30,7 +30,12 @@ sub get_monster_info {
 
     return "Error: Bad branch $branch\n" unless $branch =~ /^(trunk|stable)$/;
 
-    CORE::open(F, "-|", "bin/monster-$branch", $monster) or return undef;
+    CORE::open(F, "-|") || do {
+	    # Collect stderr too
+	    close STDERR; open STDERR, '>&STDOUT';
+	    exec "bin/monster-$branch", $monster or die "could not execute monster-$branch: $!";
+
+    };
     local $/ = undef;
     my $resp = <F>;
     CORE::close(F);
