@@ -36,6 +36,7 @@ sub get_monster_info {
 	    exec "bin/monster-$branch", $monster or die "could not execute monster-$branch: $!";
 
     };
+    binmode F, ":utf8";
     local $/ = undef;
     my $resp = <F>;
     CORE::close(F);
