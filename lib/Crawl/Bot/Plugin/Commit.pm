@@ -10,6 +10,12 @@ has repo_uri => (
     default => 'git://gitorious.org/crawl/crawl.git',
 );
 
+has announce_commits => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 1,
+);
+
 has checkout => (
     is      => 'ro',
     isa     => 'Str',
@@ -83,21 +89,23 @@ sub tick {
             $self->say_all("New branch created: $branch ($nrev commits)");
         }
 
-#        my %commits = map { $_, $self->parse_commit($_) } @revs;
-#
-#        my $cherry_picks = @revs;
-#        @revs = grep { $commits{$_}->{subject} !~ /\(cherry picked from /
-#                    && $commits{$_}->{body}    !~ /\(cherry picked from / } @revs;
-#        $cherry_picks -= @revs;
-#        $self->say_all("Cherry-picked $cherry_picks commits into $branch")
-#            if $cherry_picks > 0;
-#
-#        for my $rev (@revs) {
-#            my $commit = $commits{$rev};
-#            my $abbr = substr($rev, 0, 12);
-#            my $br = $branch eq "master" ? "" : "$branch ";
-#            $self->say_all("$commit->{author} $br* r$abbr ($commit->{nfiles} changed): $commit->{subject}");
-#        }
+	if ($self->announce_commits) {
+		my %commits = map { $_, $self->parse_commit($_) } @revs;
+
+		my $cherry_picks = @revs;
+		@revs = grep { $commits{$_}->{subject} !~ /\(cherry picked from /
+			    && $commits{$_}->{body}    !~ /\(cherry picked from / } @revs;
+		$cherry_picks -= @revs;
+		$self->say_all("Cherry-picked $cherry_picks commits into $branch")
+		    if $cherry_picks > 0;
+
+		for my $rev (@revs) {
+		    my $commit = $commits{$rev};
+		    my $abbr = substr($rev, 0, 12);
+		    my $br = $branch eq "master" ? "" : "[$branch] ";
+		    $self->say_all("$commit->{author} $br* $abbr ($commit->{nfiles} changed): $commit->{subject}");
+		}
+	}
 
         $self->head($branch => $head);
     }
