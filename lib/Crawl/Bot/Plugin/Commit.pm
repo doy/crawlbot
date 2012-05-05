@@ -86,7 +86,8 @@ sub tick {
 
         if (!$self->has_branch($branch)) {
             my $nrev = scalar @revs;
-            $self->say_all("New branch created: $branch ($nrev commits)");
+            my $pl = $nrev == 1 ? "" : "s";
+            $self->say_all("New branch created: $branch ($nrev commit$pl)");
         }
 
         if ($self->announce_commits) {
@@ -96,7 +97,8 @@ sub tick {
                 @revs = grep { $commits{$_}->{subject} !~ /\(cherry picked from /
                         && $commits{$_}->{body}    !~ /\(cherry picked from / } @revs;
                 $cherry_picks -= @revs;
-                $self->say_all("Cherry-picked $cherry_picks commits into $branch")
+                my $pl = $cherry_picks == 1 ? "" : "s";
+                $self->say_all("Cherry-picked $cherry_picks commit$pl into $branch")
                 if $cherry_picks > 0;
 
                 for my $rev (@revs) {
