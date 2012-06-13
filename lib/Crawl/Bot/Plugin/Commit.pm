@@ -13,7 +13,7 @@ has repo_uri => (
 has announce_commits => (
     is      => 'rw',
     isa     => 'Bool',
-    default => 1,
+    default => 0,
 );
 
 has checkout => (
@@ -63,7 +63,8 @@ sub said {
 
             $self->say(@keys, "$commit->{author} * r$abbr: $commit->{subject} "
                 . "($commit->{date}, $commit->{nfiles} file$pl, "
-                . "$commit->{nins}+ $commit->{ndel}-)"
+                . "$commit->{nins}+ $commit->{ndel}-) "
+		. "https://gitorious.org/crawl/crawl/commit/$abbr"
             );
         } else {
             my $ev = $? >> 8;
