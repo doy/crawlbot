@@ -26,7 +26,7 @@ wensley = function(logurl, args) {
         data = data.replace(/\cO/g, '');
 
         // Search headers
-        data = data.replace(/(\d+ match(?:es)? in )##(.*):/g, '<h3>$1<a onclick="wensley(\'%23%23$2\', {})" href="#">##$2</a>:</h3>');
+        data = data.replace(/^(\d+ match(?:es)? in )##(.*):$/mg, '<h3>$1<a onclick="wensley(\'%23%23$2\', {})" href="#">##$2</a>:</h3>');
 
         data = data.replace(/\n/g, "<br>");
         $('div#stuff').html('<h2>Wensley is so awesome</h2><a href="#files">Jump to list of logs</a> | <a href="#" onclick="wensleyclear()">Close log</a><div class="irc">' + data + '</div>');
