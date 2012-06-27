@@ -1,0 +1,62 @@
+#! /usr/bin/perl -w
+
+use CGI;
+use IO::File;
+use strict;
+
+my $q = new CGI;
+
+my $search = $q->param("s");
+my $wantre = $q->param("re");
+my $case = $q->param("cs") ? "" : "i";
+my @dlhead = ();
+
+$q->param("download") and @dlhead = (
+	-Content_disposition => "attachment; filename = crawl-dev-search.log"
+);
+
+print $q->header({
+    -type => 'text/plain', -encoding => 'UTF-8', @dlhead
+});
+
+chdir "/home/szorg/public_html/crawl-dev";
+
+# Test the regexp and show any error to the user.
+$wantre and eval {
+	"" =~ /$search/;
+};
+if ($@) {
+	print "$@\nSearch aborted.";
+	exit(0);
+}
+
+my $matching_files=0;
+FILE: for my $logf (<*.log>) {
+	my $f = new IO::File $logf, "<:encoding(UTF-8)";
+	unless (defined $f) {
+		print "skipping $logf: $!\n";
+		next FILE;
+	}
+
+	my $matches = "";
+	my $matchct = 0;
+	while (<$f>) {
+		chomp;
+		if (!defined($search) or $search eq ""
+				or ($wantre and /(?$case:$search)/)
+				or (!$wantre and /(?$case:\Q$search\E)/))
+		{
+			$matches .= "$_\n";
+			++$matchct;
+		}
+	}
+	$f->close();
+
+	if ($matches) {
+		print "\n" if $matching_files++;
+		my $pl = $matchct == 1 ? "" : "es";
+		print "$matchct match$pl in $logf:\n$matches";
+	}
+}
+
+print "No results found.\n" unless $matching_files;

@@ -1,0 +1,11 @@
+IndexOptions FancyIndexing NameWidth=30 SuppressHTMLPreamble
+IndexOrderDefault Descending Name
+IndexIgnore .*
+IndexIgnore crawl-dev.log.concat
+AddType text/plain .log
+AddType text/html .shtml
+AddOutputFilter INCLUDES .shtml
+AddHandler cgi-script .concat
+AddType text/plain .concat
+HeaderName .logview.shtml
+AddDescription "<a href='#' onclick='wensley(this.previousSibling.previousSibling.attributes[\"href\"].value)'>View log</a>" *

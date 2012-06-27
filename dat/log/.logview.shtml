@@ -1,0 +1,88 @@
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.1.min.js"></script>
+<script type="text/javascript">
+wensleysubmit = function() {
+    logurl = '%23%23crawl-dev-' + $('input#date').val() + '.log';
+    wensley(logurl, {});
+}
+wensleysearch = function() {
+    wensley('crawl-dev.log.concat', {
+	s: $('input#s').val(),
+	re: $('input#re:checked').val(),
+	cs: $('input#cs:checked').val(),
+    });
+}
+wensleyclear = function() {
+    $('div#stuff').html('');
+}
+wensley = function(logurl, args) {
+    $.get(logurl, args, function(data) {
+        data = data.replace(/&/g, '&amp;');
+        data = data.replace(/</g, '&lt;');
+        data = data.replace(/>/g, '&gt;');
+
+        // Ugh: try to handle colour and bold tags.
+        data = data.replace(/\cC(?:0(\d)|([1-9]\d?))(?:,(?:0(\d)|([1-9]\d?)))?([^\cC\cO\n]*\cO?)/g, '<span class="fg$1$2 bg$3$4">$5</span>');
+        data = data.replace(/\cB([^\cB\cO\n]*)\cO?/g, '<b>$1</b>');
+        data = data.replace(/\cO/g, '');
+
+        data = data.replace(/\n/g, "<br>");
+        $('div#stuff').html('<h2>Wensley is so awesome</h2><a href="#files">Jump to list of logs</a> | <a href="#" onclick="wensleyclear()">Close log</a><div class="irc">' + data + '</div>');
+    });
+}
+</script>
+<style type="text/css">
+	.irc { font-family: monospace; }
+	.fg0 { color: white; }
+	.fg1 { color: black; }
+	.fg2 { color: #4040ff; }
+	.fg3 { color: green; }
+	.fg4 { color: red; }
+	.fg5 { color: #ff4040; }
+	.fg6 { color: purple; }
+	.fg7 { color: #606000; }
+	.fg8 { color: #a0a000; }
+	.fg9 { color: #40ff40; }
+	.fg10 { color: teal; }
+	.fg11 { color: #00ffff; }
+	.fg12 { color: #8080ff; }
+	.fg13 { color: #ff00ff; }
+	.fg14 { color: #404040; }
+	.fg15 { color: #808080; }
+	.fg16 { color: black; }
+	.bg0 { background: white; }
+	.bg1 { background: black; }
+	.bg2 { background: #4040ff; }
+	.bg3 { background: green; }
+	.bg4 { background: red; }
+	.bg5 { background: #ff4040; }
+	.bg6 { background: purple; }
+	.bg7 { background: #606000; }
+	.bg8 { background: #a0a000; }
+	.bg9 { background: #40ff40; }
+	.bg10 { background: teal; }
+	.bg11 { background: #00ffff; }
+	.bg12 { background: #8080ff; }
+	.bg13 { background: #ff00ff; }
+	.bg14 { background: #404040; }
+	.bg15 { background: #808080; }
+	.bg16 { background: black; }
+</style>
+</head>
+<body>
+<form onsubmit="wensleysubmit();return false;">    
+    <label for="date">Enter a date in YYYYMMDD format:</label>
+    <input type="text" id="date" name="date">
+    <input type="submit" id="submit" name="submit" value="Get log">
+</form>
+<form method="get" action="crawl-dev.log.concat">
+    <label for="s">Search for</label> <input type="text" name="s" id="s">
+    <input type="checkbox" id="re" name="re"><label for="re">regex</label>
+    <input type="checkbox" id="cs" name="cs"><label for="cs">case-sensitive</label>
+    <input type="hidden" id="download" name="download" value="1">
+    <input onclick="wensleysearch();return false;" type="submit" name="view" id="view" value="Search">
+    <input type="submit" name="search" id="search" value="Download results">
+</form>
+<div id="stuff"></div>
+<a name="files"></a>
+</body>
+
