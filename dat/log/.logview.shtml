@@ -23,7 +23,10 @@ wensley = function(logurl, args) {
         // Ugh: try to handle colour and bold tags.
         data = data.replace(/\cC(?:0(\d)|([1-9]\d?))(?:,(?:0(\d)|([1-9]\d?)))?([^\cC\cO\n]*\cO?)/g, '<span class="fg$1$2 bg$3$4">$5</span>');
         data = data.replace(/\cB([^\cB\cO\n]*)\cO?/g, '<b>$1</b>');
-        data = data.replace(/\cO/g, '');
+	data = data.replace(/\cO/g, '');
+
+	// Search headers
+	data = data.replace(/(\d+ match(?:es)? in )##(.*):/g, '<h3>$1<a onclick="wensley(\'%23%23$2\', {})" href="#">##$2</a>:</h3>');
 
         data = data.replace(/\n/g, "<br>");
         $('div#stuff').html('<h2>Wensley is so awesome</h2><a href="#files">Jump to list of logs</a> | <a href="#" onclick="wensleyclear()">Close log</a><div class="irc">' + data + '</div>');
@@ -31,6 +34,7 @@ wensley = function(logurl, args) {
 }
 </script>
 <style type="text/css">
+	h3 { margin-bottom: 0em; }
 	.irc { font-family: monospace; }
 	.fg0 { color: white; }
 	.fg1 { color: black; }
