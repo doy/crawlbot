@@ -6,9 +6,9 @@ wensleysubmit = function() {
 }
 wensleysearch = function() {
     wensley('crawl-dev.log.concat', {
-	s: $('input#s').val(),
-	re: $('input#re:checked').val(),
-	cs: $('input#cs:checked').val(),
+        s: $('input#s').val(),
+        re: $('input#re:checked').val(),
+        cs: $('input#cs:checked').val(),
     });
 }
 wensleyclear = function() {
@@ -23,10 +23,10 @@ wensley = function(logurl, args) {
         // Ugh: try to handle colour and bold tags.
         data = data.replace(/\cC(?:0(\d)|([1-9]\d?))(?:,(?:0(\d)|([1-9]\d?)))?([^\cC\cO\n]*\cO?)/g, '<span class="fg$1$2 bg$3$4">$5</span>');
         data = data.replace(/\cB([^\cB\cO\n]*)\cO?/g, '<b>$1</b>');
-	data = data.replace(/\cO/g, '');
+        data = data.replace(/\cO/g, '');
 
-	// Search headers
-	data = data.replace(/(\d+ match(?:es)? in )##(.*):/g, '<h3>$1<a onclick="wensley(\'%23%23$2\', {})" href="#">##$2</a>:</h3>');
+        // Search headers
+        data = data.replace(/(\d+ match(?:es)? in )##(.*):/g, '<h3>$1<a onclick="wensley(\'%23%23$2\', {})" href="#">##$2</a>:</h3>');
 
         data = data.replace(/\n/g, "<br>");
         $('div#stuff').html('<h2>Wensley is so awesome</h2><a href="#files">Jump to list of logs</a> | <a href="#" onclick="wensleyclear()">Close log</a><div class="irc">' + data + '</div>');
@@ -34,42 +34,42 @@ wensley = function(logurl, args) {
 }
 </script>
 <style type="text/css">
-	h3 { margin-bottom: 0em; }
-	.irc { font-family: monospace; }
-	.fg0 { color: white; }
-	.fg1 { color: black; }
-	.fg2 { color: #4040ff; }
-	.fg3 { color: green; }
-	.fg4 { color: red; }
-	.fg5 { color: #ff4040; }
-	.fg6 { color: purple; }
-	.fg7 { color: #606000; }
-	.fg8 { color: #a0a000; }
-	.fg9 { color: #40ff40; }
-	.fg10 { color: teal; }
-	.fg11 { color: #00ffff; }
-	.fg12 { color: #8080ff; }
-	.fg13 { color: #ff00ff; }
-	.fg14 { color: #404040; }
-	.fg15 { color: #808080; }
-	.fg16 { color: black; }
-	.bg0 { background: white; }
-	.bg1 { background: black; }
-	.bg2 { background: #4040ff; }
-	.bg3 { background: green; }
-	.bg4 { background: red; }
-	.bg5 { background: #ff4040; }
-	.bg6 { background: purple; }
-	.bg7 { background: #606000; }
-	.bg8 { background: #a0a000; }
-	.bg9 { background: #40ff40; }
-	.bg10 { background: teal; }
-	.bg11 { background: #00ffff; }
-	.bg12 { background: #8080ff; }
-	.bg13 { background: #ff00ff; }
-	.bg14 { background: #404040; }
-	.bg15 { background: #808080; }
-	.bg16 { background: black; }
+    h3 { margin-bottom: 0em; }
+    .irc { font-family: monospace; }
+    .fg0 { color: white; }
+    .fg1 { color: black; }
+    .fg2 { color: #4040ff; }
+    .fg3 { color: green; }
+    .fg4 { color: red; }
+    .fg5 { color: #ff4040; }
+    .fg6 { color: purple; }
+    .fg7 { color: #606000; }
+    .fg8 { color: #a0a000; }
+    .fg9 { color: #40ff40; }
+    .fg10 { color: teal; }
+    .fg11 { color: #00ffff; }
+    .fg12 { color: #8080ff; }
+    .fg13 { color: #ff00ff; }
+    .fg14 { color: #404040; }
+    .fg15 { color: #808080; }
+    .fg16 { color: black; }
+    .bg0 { background: white; }
+    .bg1 { background: black; }
+    .bg2 { background: #4040ff; }
+    .bg3 { background: green; }
+    .bg4 { background: red; }
+    .bg5 { background: #ff4040; }
+    .bg6 { background: purple; }
+    .bg7 { background: #606000; }
+    .bg8 { background: #a0a000; }
+    .bg9 { background: #40ff40; }
+    .bg10 { background: teal; }
+    .bg11 { background: #00ffff; }
+    .bg12 { background: #8080ff; }
+    .bg13 { background: #ff00ff; }
+    .bg14 { background: #404040; }
+    .bg15 { background: #808080; }
+    .bg16 { background: black; }
 </style>
 </head>
 <body>

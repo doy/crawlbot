@@ -15,9 +15,7 @@ $q->param("download") and @dlhead = (
 	-Content_disposition => "attachment; filename = crawl-dev-search.log"
 );
 
-print $q->header({
-    -type => 'text/plain', -encoding => 'UTF-8', @dlhead
-});
+print $q->header({ -type => 'text/plain', -encoding => 'UTF-8', @dlhead });
 
 chdir "/home/szorg/public_html/crawl-dev";
 
