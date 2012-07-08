@@ -143,9 +143,7 @@ sub userquit {
     my $self = shift;
     my ($args) = @_;
 
-    if ($args->{channel} eq $self->bot->{channels}[0]) {
-	    $self->log_message("-!- $args->{who} has quit [$args->{body}]");
-    }
+    $self->log_message("-!- $args->{who} has quit [$args->{body}]");
     return;
 }
 
