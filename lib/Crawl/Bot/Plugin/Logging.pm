@@ -79,7 +79,9 @@ sub emoted {
     my $self = shift;
     my ($args) = @_;
 
-    $self->log_message("* $args->{who} $args->{body}");
+    if ($args->{channel} eq $self->bot->{channels}[0]) {
+	    $self->log_message("* $args->{who} $args->{body}");
+    }
     return;
 }
 
@@ -87,7 +89,9 @@ sub chanjoin {
     my $self = shift;
     my ($args) = @_;
 
-    $self->log_message("-!- $args->{who} has joined $args->{channel}");
+    if ($args->{channel} eq $self->bot->{channels}[0]) {
+	    $self->log_message("-!- $args->{who} has joined $args->{channel}");
+    }
     return;
 }
 
@@ -95,7 +99,9 @@ sub chanpart {
     my $self = shift;
     my ($args) = @_;
 
-    $self->log_message("-!- $args->{who} has left $args->{channel}");
+    if ($args->{channel} eq $self->bot->{channels}[0]) {
+	    $self->log_message("-!- $args->{who} has left $args->{channel}");
+    }
     return;
 }
 
@@ -104,6 +110,7 @@ sub nick_change {
     # bleh... uses different arg format
     my ($old, $new) = @_;
 
+    # I guess we get nick changes everywhere *sigh*
     $self->log_message("-!- $old is now known as $new");
     return;
 }
@@ -112,7 +119,9 @@ sub kicked {
     my $self = shift;
     my ($args) = @_;
 
-    $self->log_message("-!- $args->{kicked} was kicked from $args->{channel} by $args->{who} [$args->{reason}]");
+    if ($args->{channel} eq $self->bot->{channels}[0]) {
+	    $self->log_message("-!- $args->{kicked} was kicked from $args->{channel} by $args->{who} [$args->{reason}]");
+    }
     return;
 }
 
@@ -120,6 +129,7 @@ sub topic {
     my $self = shift;
     my ($args) = @_;
 
+    # Might as well log this for ##crawl as well.
     if (defined($args->{who})) {
         $self->log_message("-!- $args->{who} changed the topic of $args->{channel} to: $args->{topic}");
     }
@@ -133,7 +143,9 @@ sub userquit {
     my $self = shift;
     my ($args) = @_;
 
-    $self->log_message("-!- $args->{who} has quit [$args->{body}]");
+    if ($args->{channel} eq $self->bot->{channels}[0]) {
+	    $self->log_message("-!- $args->{who} has quit [$args->{body}]");
+    }
     return;
 }
 
@@ -141,7 +153,7 @@ sub sent {
     my $self = shift;
     my ($args) = @_;
 
-    unless ($args->{channel} eq 'msg') {
+    if ($args->{channel} eq $self->bot->{channels}[0]) {
         $self->log_message("<$args->{who}> $args->{body}");
     }
     return;
