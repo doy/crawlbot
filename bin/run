@@ -6,6 +6,6 @@ use Crawl::Bot;
 
 Crawl::Bot->new(
     server   => 'irc.freenode.net',
-    channels => ['##crawl-dev'],
+    channels => ['##crawl-dev', '##crawl'],
     nick     => 'Cheibriados',
 )->run;

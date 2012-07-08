@@ -68,7 +68,8 @@ sub said {
     my $self = shift;
     my ($args) = @_;
 
-    unless ($args->{channel} eq 'msg') {
+    # Only log the first channel
+    if ($args->{channel} eq $self->bot->{channels}[0]) {
         $self->log_message("<$args->{who}> $args->{body}");
     }
     return;
