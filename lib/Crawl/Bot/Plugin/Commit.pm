@@ -64,7 +64,7 @@ sub said {
             $self->say(@keys, "$commit->{author} * r$abbr: $commit->{subject} "
                 . "($commit->{date}, $commit->{nfiles} file$pl, "
                 . "$commit->{nins}+ $commit->{ndel}-) "
-		. "https://gitorious.org/crawl/crawl/commit/$abbr"
+                . "https://gitorious.org/crawl/crawl/commit/$abbr"
             );
         } else {
             my $ev = $? >> 8;

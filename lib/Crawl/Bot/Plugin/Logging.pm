@@ -89,7 +89,7 @@ sub emoted {
     my ($args) = @_;
 
     if ($args->{channel} eq $self->bot->{channels}[0]) {
-	    $self->log_message("* $args->{who} $args->{body}");
+        $self->log_message("* $args->{who} $args->{body}");
     }
     return;
 }
@@ -99,7 +99,7 @@ sub chanjoin {
     my ($args) = @_;
 
     if ($args->{channel} eq $self->bot->{channels}[0]) {
-	    $self->log_message("-!- $args->{who} has joined $args->{channel}");
+        $self->log_message("-!- $args->{who} has joined $args->{channel}");
     }
     return;
 }
@@ -109,7 +109,7 @@ sub chanpart {
     my ($args) = @_;
 
     if ($args->{channel} eq $self->bot->{channels}[0]) {
-	    $self->log_message("-!- $args->{who} has left $args->{channel}");
+        $self->log_message("-!- $args->{who} has left $args->{channel}");
     }
     return;
 }
@@ -129,7 +129,7 @@ sub kicked {
     my ($args) = @_;
 
     if ($args->{channel} eq $self->bot->{channels}[0]) {
-	    $self->log_message("-!- $args->{kicked} was kicked from $args->{channel} by $args->{who} [$args->{reason}]");
+        $self->log_message("-!- $args->{kicked} was kicked from $args->{channel} by $args->{who} [$args->{reason}]");
     }
     return;
 }
