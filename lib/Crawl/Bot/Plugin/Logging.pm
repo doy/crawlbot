@@ -71,32 +71,7 @@ sub said {
     # Only log the first channel
     if ($args->{channel} eq $self->bot->{channels}[0]) {
         $self->log_message("<$args->{who}> $args->{body}");
-    } elsif ($args->{channel} ne "msg"
-            and $args->{who} =~ /^(?:Gretell|Henzell|\|amethyst)$/
-            and $args->{body} =~ /^(\S+) .*became the Champion of Cheibriados/)
-    {
-        $self->say(
-            channel => $args->{channel},
-            body => "Did I ever mention that $1 is one of my favourite people?"
-        );
-    } elsif ($args->{channel} ne "msg"
-            and $args->{who} =~ /^(?:Gretell|Henzell|\|amethyst)$/
-            and $args->{body} =~ /^(\S+) .*abandoned Cheibriados\./)
-    {
-        $self->say(
-            channel => $args->{channel},
-            body => "Fine, $1, I didn't like you either!"
-        );
-    } elsif ($args->{channel} ne "msg"
-            and $args->{who} =~ /^(?:Gretell|Henzell|\|amethyst)$/
-            and $args->{body} =~ /^(Chei\S+) .*became the Champion of [^C]/)
-    {
-        $self->say(
-            channel => $args->{channel},
-            body => "Did I ever mention that $1 is a heretic?"
-        );
     }
-
     return;
 }
 
