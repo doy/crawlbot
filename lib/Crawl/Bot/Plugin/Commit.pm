@@ -125,7 +125,7 @@ sub parse_commit {
     my ($rev) = @_;
     my $dir = pushd($self->checkout);
 
-    CORE::open(F, "-|", qw(git log -1 --shortstat --pretty=format:%H%x00%aN%x00%s%x00%b%x00%ar%x00), $rev) or return undef;
+    CORE::open(F, "-|:encoding(UTF-8)", qw(git log -1 --shortstat --pretty=format:%H%x00%aN%x00%s%x00%b%x00%ar%x00), $rev) or return undef;
     local $/ = undef;
     my $info = <F>;
     CORE::close(F) or return undef;
