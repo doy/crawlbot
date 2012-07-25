@@ -61,7 +61,9 @@ sub said {
             my $abbr = substr($commit->{hash}, 0, 12);
             my $pl = ($commit->{nfiles} == 1 ? "" : "s");
 
-            $self->say(@keys, "$commit->{author} * r$abbr: $commit->{subject} "
+            my $rev = $commit->{revname} || "r$abbr";
+
+            $self->say(@keys, "$commit->{author} * $rev: $commit->{subject} "
                 . "($commit->{date}, $commit->{nfiles} file$pl, "
                 . "$commit->{nins}+ $commit->{ndel}-) "
                 . "https://gitorious.org/crawl/crawl/commit/$abbr"
@@ -130,6 +132,14 @@ sub parse_commit {
     my $info = <F>;
     CORE::close(F) or return undef;
 
+    my $revname;
+
+    if (CORE::open(F, "-|:encoding(UTF-8)", qw(git describe), $rev)) {
+        $revname = <F>;
+	$revname =~ s/\n.*//;
+        CORE::close(F);
+    }
+
     $info =~ /(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*)/s or return undef;
     my ($hash, $author, $subject, $body, $date, $stat) = ($1, $2, $3, $4, $5, $6);
 
@@ -146,6 +156,7 @@ sub parse_commit {
         nfiles  => $nfiles,
         nins    => $nins,
         ndel    => $ndel,
+        revname => $revname,
     };
 }
 
