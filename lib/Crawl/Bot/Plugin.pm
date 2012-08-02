@@ -6,7 +6,7 @@ has bot => (
     isa      => 'Crawl::Bot',
     required => 1,
     weak_ref => 1,
-    handles  => [qw(say say_all data_dir)],
+    handles  => [qw(emote say say_all data_dir)],
 );
 
 # not all plugins require implementations here
