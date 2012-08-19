@@ -136,7 +136,7 @@ sub parse_commit {
 
     if (CORE::open(F, "-|:encoding(UTF-8)", qw(git describe), $rev)) {
         $revname = <F>;
-	$revname =~ s/\n.*//;
+        $revname =~ s/\n.*//;
         CORE::close(F);
     }
 
