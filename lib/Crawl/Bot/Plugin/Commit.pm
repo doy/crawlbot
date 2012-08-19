@@ -106,9 +106,18 @@ sub tick {
 
                 for my $rev (@revs) {
                         my $commit = $commits{$rev};
-                        my $abbr = substr($rev, 0, 12);
                         my $br = $branch eq "master" ? "" : "[$branch] ";
-                        $self->say_all("$commit->{author} $br* $abbr ($commit->{nfiles} changed): $commit->{subject}");
+
+                        my $abbr = substr($commit->{hash}, 0, 12);
+                        my $pl = ($commit->{nfiles} == 1 ? "" : "s");
+
+                        my $revname = $commit->{revname} || "r$abbr";
+
+                        $self->say_all("$commit->{author} * $revname: $commit->{subject} "
+                                . "($commit->{date}, $commit->{nfiles} file$pl, "
+                                . "$commit->{nins}+ $commit->{ndel}-) "
+                                . "https://gitorious.org/crawl/crawl/commit/$abbr"
+                        );
                 }
         }
 
