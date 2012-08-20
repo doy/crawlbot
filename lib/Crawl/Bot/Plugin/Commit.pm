@@ -113,7 +113,7 @@ sub tick {
 
                         my $revname = $commit->{revname} || "r$abbr";
 
-                        $self->say_all("$commit->{author} * $revname: $commit->{subject} "
+                        $self->say_all("$commit->{author} $br* $revname: $commit->{subject} "
                                 . "($commit->{date}, $commit->{nfiles} file$pl, "
                                 . "$commit->{nins}+ $commit->{ndel}-) "
                                 . "https://gitorious.org/crawl/crawl/commit/$abbr"
