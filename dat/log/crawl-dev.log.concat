@@ -29,7 +29,7 @@ if ($@) {
 }
 
 my $matching_files=0;
-FILE: for my $logf (<*.log>) {
+FILE: for my $logf (reverse <*.log>) {
 	my $f = new IO::File $logf, "<:encoding(UTF-8)";
 	unless (defined $f) {
 		print "skipping $logf: $!\n";
