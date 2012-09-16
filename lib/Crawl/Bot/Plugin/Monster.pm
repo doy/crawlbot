@@ -12,8 +12,8 @@ sub said {
     my ($args) = @_;
     my @keys = (who => $args->{who}, channel => $args->{channel}, "body");
 
-    if ($args->{body} =~ /^%(\?\??) *(.*)/) {
-        my $branch = ($1 eq "??") ? "trunk" : "stable";
+    if ($args->{body} =~ /^%(\?|0\.\d+|)\? *([^?].*)/) {
+        my $branch = ($1 eq "?") ? "trunk" : ($1 || "stable");
         my $resp = $self->get_monster_info($2, $branch);
         if ($resp) {
             $self->say(@keys, $resp);
@@ -28,12 +28,12 @@ sub get_monster_info {
     my $monster = shift;
     my $branch = shift;
 
-    return "Error: Bad branch $branch\n" unless $branch =~ /^(trunk|stable)$/;
+    return "Error: Bad branch $branch\n" unless $branch =~ /^(trunk|stable|0.\d+)$/;
 
     CORE::open(F, "-|") || do {
         # Collect stderr too
         close STDERR; open STDERR, '>&STDOUT';
-        exec "bin/monster-$branch", $monster or die "could not execute monster-$branch: $!";
+        exec "bin/monster-$branch", $monster or return "Could not execute monster-$branch: $!";
     };
     binmode F, ":utf8";
     local $/ = undef;
