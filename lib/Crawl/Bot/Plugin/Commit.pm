@@ -13,7 +13,7 @@ has repo_uri => (
 has announce_commits => (
     is      => 'rw',
     isa     => 'Bool',
-    default => 0,
+    default => 1,
 );
 
 has checkout => (
