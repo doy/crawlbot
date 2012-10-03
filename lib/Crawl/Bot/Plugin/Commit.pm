@@ -85,7 +85,7 @@ sub tick {
         chomp ($old_head, $head);
         next if $old_head eq $head;
 
-        my @revs = split /\n/, `git rev-list $old_head..$head`;
+        my @revs = split /\n/, `git rev-list $head ^$old_head ^master`;
 
         if (!$self->has_branch($branch)) {
             my $nrev = scalar @revs;
