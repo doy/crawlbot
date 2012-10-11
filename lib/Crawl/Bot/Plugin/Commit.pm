@@ -16,6 +16,18 @@ has announce_commits => (
     default => 1,
 );
 
+has colour_announce => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 1,
+);
+
+has colour_query => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 1,
+);
+
 has checkout => (
     is      => 'ro',
     isa     => 'Str',
@@ -47,6 +59,34 @@ has heads => (
     },
 );
 
+my %colour_codes = (
+    author => 3,
+    branch => 7,
+    stats => 10,
+    url => 13
+);
+
+sub colour {
+    my $self = shift;
+    my $context = shift;
+    my $type = shift;
+
+    if ($context eq "announce") {
+        return "" unless $self->colour_announce;
+    } elsif ($context eq "query") {
+        return "" unless $self->colour_query;
+    }
+
+    if ($type eq "reset") {
+        return "\017";
+    } elsif ($type eq "colon" or $type eq "rev") {
+        return "\002";
+    } else {
+        my $code = $colour_codes{$type};
+        return defined($code) ? sprintf("\003%02d", $code) : "";
+    }
+}
+
 sub said {
     my $self = shift;
     my ($args) = @_;
@@ -63,10 +103,24 @@ sub said {
 
             my $rev = $commit->{revname} || "r$abbr";
 
-            $self->say(@keys, "$commit->{author} * $rev: $commit->{subject} "
-                . "($commit->{date}, $commit->{nfiles} file$pl, "
-                . "$commit->{nins}+ $commit->{ndel}-) "
-                . "https://gitorious.org/crawl/crawl/commit/$abbr"
+            $self->say(@keys,
+                sprintf(
+                    "%s%s%s * %s%s%s:%s %s%s%s %s(%s, %s file%s, %s+ %s-)%s %s%s%s",
+                    $self->colour(query => "author"), $commit->{author},
+                    $self->colour(query => "reset"),
+                    $self->colour(query => "rev"), $rev,
+                    $self->colour(query => "colon"),
+                    $self->colour(query => "reset"),
+                    $self->colour(query => "subject"), $commit->{subject},
+                    $self->colour(query => "reset"),
+                    $self->colour(query => "stats"),
+                    $commit->{date}, $commit->{nfiles}, $pl,
+                    $commit->{nins}, $commit->{ndel},
+                    $self->colour(query => "reset"),
+                    $self->colour(query => "url"),
+                    "https://gitorious.org/crawl/crawl/commit/$abbr",
+                    $self->colour(query => "reset"),
+                )
             );
         } else {
             my $ev = $? >> 8;
@@ -115,10 +169,26 @@ sub tick {
 
                         my $revname = $commit->{revname} || "r$abbr";
 
-                        $self->say_all("$commit->{author} $br* $revname: $commit->{subject} "
-                                . "($commit->{date}, $commit->{nfiles} file$pl, "
-                                . "$commit->{nins}+ $commit->{ndel}-) "
-                                . "https://gitorious.org/crawl/crawl/commit/$abbr"
+                        $self->say_all(
+                            sprintf(
+                                "%s%s%s %s%s%s* %s%s%s:%s %s%s%s %s(%s, %s file%s, %s+ %s-)%s %s%s%s",
+                                $self->colour(announce => "author"), $commit->{author},
+                                $self->colour(announce => "reset"),
+                                $self->colour(announce => "branch"), $br,
+                                $self->colour(announce => "reset"),
+                                $self->colour(announce => "rev"), $revname,
+                                $self->colour(announce => "colon"),
+                                $self->colour(announce => "reset"),
+                                $self->colour(announce => "subject"), $commit->{subject},
+                                $self->colour(announce => "reset"),
+                                $self->colour(announce => "stats"),
+                                $commit->{date}, $commit->{nfiles}, $pl,
+                                $commit->{nins}, $commit->{ndel},
+                                $self->colour(announce => "reset"),
+                                $self->colour(announce => "url"),
+                                "https://gitorious.org/crawl/crawl/commit/$abbr",
+                                $self->colour(announce => "reset"),
+                            )
                         );
                 }
         }
