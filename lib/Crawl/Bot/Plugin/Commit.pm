@@ -16,6 +16,12 @@ has announce_commits => (
     default => 1,
 );
 
+has announce_limit => (
+    is      => 'rw',
+    isa     => 'Int',
+    default => 10,
+);
+
 has colour_announce => (
     is      => 'rw',
     isa     => 'Bool',
@@ -160,7 +166,11 @@ sub tick {
                 $self->say_all("Cherry-picked $cherry_picks commit$pl into $branch")
                 if $cherry_picks > 0;
 
+                my $count = 0;
                 for my $rev (@revs) {
+                        if (++$count > $self->announce_limit) {
+                            $self->say_all("... and " . (scalar @revs - $count + 1) . " more commits");
+                        }
                         my $commit = $commits{$rev};
                         my $br = $branch eq "master" ? "" : "[$branch] ";
 
