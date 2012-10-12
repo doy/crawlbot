@@ -170,6 +170,7 @@ sub tick {
                 for my $rev (@revs) {
                         if (++$count > $self->announce_limit) {
                             $self->say_all("... and " . (scalar @revs - $count + 1) . " more commits");
+                            last;
                         }
                         my $commit = $commits{$rev};
                         my $br = $branch eq "master" ? "" : "[$branch] ";
