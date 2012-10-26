@@ -147,7 +147,8 @@ sub tick {
 
         # Exclude merges from master into other branches.
         my $exclude_master = $branch eq "master" ? "" : "^master";
-        my @revs = split /\n/, `git rev-list $head ^$old_head $exclude_master`;
+        my $exclude_old = $old_head ? "^$old_head" : "";
+        my @revs = split /\n/, `git rev-list $head $exclude_old $exclude_master`;
 
         if (!$self->has_branch($branch)) {
             my $nrev = scalar @revs;
