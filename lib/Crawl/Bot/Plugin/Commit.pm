@@ -168,7 +168,7 @@ sub tick {
                 if $cherry_picks > 0;
 
                 my $count = 0;
-                for my $rev (@revs) {
+                for my $rev (reverse @revs) {
                         if (++$count > $self->announce_limit) {
                             $self->say_all("... and " . (scalar @revs - $count + 1) . " more commits");
                             last;
