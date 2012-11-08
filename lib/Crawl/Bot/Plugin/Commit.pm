@@ -124,7 +124,7 @@ sub said {
                     $commit->{nins}, $commit->{ndel},
                     $self->colour(query => "reset"),
                     $self->colour(query => "url"),
-                    "https://gitorious.org/crawl/crawl/commit/$abbr",
+                    "http://git.develz.org/?p=crawl.git;a=commitdiff;h=$abbr",
                     $self->colour(query => "reset"),
                 )
             );
@@ -198,7 +198,7 @@ sub tick {
                                 $commit->{nins}, $commit->{ndel},
                                 $self->colour(announce => "reset"),
                                 $self->colour(announce => "url"),
-                                "https://gitorious.org/crawl/crawl/commit/$abbr",
+                                "http://git.develz.org/?p=crawl.git;a=commitdiff;h=$abbr",
                                 $self->colour(announce => "reset"),
                             )
                         );
