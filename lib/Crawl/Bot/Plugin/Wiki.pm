@@ -25,6 +25,12 @@ has last_checked => (
     isa => 'Int',
 );
 
+has enabled => (
+    is  => 'ro',
+    isa => 'Bool',
+    default => 0
+);
+
 sub login_file_name {
     my $self = shift;
 
@@ -56,6 +62,7 @@ sub login_wiki {
 sub tick {
     local $_;
     my $self = shift;
+    return unless $self->enabled;
     my $last_checked = $self->last_checked;
     $self->last_checked(time);
     return unless $last_checked;
