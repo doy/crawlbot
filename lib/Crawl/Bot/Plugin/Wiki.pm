@@ -17,7 +17,7 @@ has wiki_base => (
     is      => 'ro',
     isa     => 'Str',
     lazy    => 1,
-    default => 'http://crawl.develz.org/wiki/doku.php?id=',
+    default => 'https://crawl.develz.org/wiki/doku.php?id=',
 );
 
 has last_checked => (
