@@ -4,6 +4,12 @@ extends 'Crawl::Bot::Plugin';
 
 with 'Crawl::Bot::Role::RSS';
 
+has enabled => (
+    is  => 'ro',
+    isa => 'Bool',
+    default => 1
+);
+
 sub rss_feed { 'https://crawl.develz.org/mantis/issues_rss.php' }
 
 sub item_to_id {
@@ -27,6 +33,7 @@ sub said {
 
 sub tick {
     my $self = shift;
+    return unless $self->enabled;
     $self->each_current_item(sub {
         my $item = shift;
         my $id = $self->item_to_id($item);
