@@ -61,7 +61,10 @@ before say => sub {
 sub tick {
     my $self = shift;
     warn "Checking for updates...";
-    $_->tick for @{ $self->plugins };
+    for (@{ $self->plugins }) {
+        warn "...$_";
+        $_->tick
+    }
     warn "Done";
     return $self->update_time;
 }

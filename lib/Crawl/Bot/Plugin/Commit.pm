@@ -138,9 +138,11 @@ sub said {
 sub tick {
     my $self = shift;
     my $dir = pushd($self->checkout);
+    warn "fetch";
     system('git fetch');
     for my $branch ($self->branches) {
         my $old_head = $self->head($branch) || '';
+        warn "rev-parse $branch";
         my $head = `git rev-parse $branch`;
         chomp ($old_head, $head);
         next if $old_head eq $head;
@@ -148,7 +150,9 @@ sub tick {
         # Exclude merges from master into other branches.
         my $exclude_master = $branch eq "master" ? "" : "^master";
         my $exclude_old = $old_head ? "^$old_head" : "";
+        warn "rev-list $head $exclude_old $exclude_master";
         my @revs = split /\n/, `git rev-list $head $exclude_old $exclude_master`;
+        warn "rev-list done";
 
         if (!$self->has_branch($branch)) {
             my $nrev = scalar @revs;
