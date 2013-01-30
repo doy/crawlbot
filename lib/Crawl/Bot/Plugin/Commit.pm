@@ -16,6 +16,9 @@ has announce_commits => (
     default => 1,
 );
 
+# Maximum number of commits to announce from a large batch.  If there
+# are exactly announce_limits + 1 new commits, all of them will be
+# announced, to avoid a useless "and 1 more commit" message.
 has announce_limit => (
     is      => 'rw',
     isa     => 'Int',
@@ -169,11 +172,13 @@ sub tick {
                 $cherry_picks -= @revs;
                 my $pl = $cherry_picks == 1 ? "" : "s";
                 $self->say_all("Cherry-picked $cherry_picks commit$pl into $branch")
-                if $cherry_picks > 0;
+                    if $cherry_picks > 0;
 
                 my $count = 0;
                 for my $rev (reverse @revs) {
-                        if (++$count > $self->announce_limit) {
+                        # If it's just one more than the announce limit, don't bother with
+                        # the message and announce the last commit anyway.
+                        if (++$count > $self->announce_limit and scalar @revs > 1) {
                             $self->say_all("... and " . (scalar @revs - $count + 1) . " more commits");
                             last;
                         }
