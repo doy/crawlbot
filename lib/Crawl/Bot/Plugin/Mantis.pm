@@ -42,7 +42,7 @@ sub tick {
         (my $title = $item->{title}) =~ s/\d+: //;
         my $link = $item->{link};
         (my $user = $item->{creator}) =~ s/ <.*?>$//;
-        $self->say_all("$title ($link) by $user");
+        $self->say_all("$title <$link> by $user");
         $self->add_item($id);
     });
     $self->save_item_cache;
