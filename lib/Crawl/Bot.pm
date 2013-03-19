@@ -60,12 +60,15 @@ before say => sub {
 
 sub tick {
     my $self = shift;
-    warn "Checking for updates...";
+    print STDERR "Checking for updates at " . localtime() . ":\n";
     for (@{ $self->plugins }) {
-        warn "...$_";
-        $_->tick
+        print STDERR " --- " . ref($_);
+
+        my $before = time;
+        $_->tick;
+        printf STDERR " [%d sec]\n", time - $before
     }
-    warn "Done";
+    print STDERR "Done\n";
     return $self->update_time;
 }
 
