@@ -40,6 +40,7 @@ sub get_monster_info {
     my $resp = <F>;
     CORE::close(F);
 
+    $resp =~ s/^([^\w\s])/_$1/;
     return $resp;
 }
 
