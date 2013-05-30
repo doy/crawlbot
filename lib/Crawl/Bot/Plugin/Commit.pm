@@ -76,6 +76,12 @@ my %colour_codes = (
     url => 13
 );
 
+sub make_web_uri {
+    my $self = shift;
+    my $commit = shift;
+    return "http://s-z.org/neil/git/?p=crawl.git;a=commitdiff;h=$commit";
+}
+
 sub colour {
     my $self = shift;
     my $context = shift;
@@ -128,7 +134,7 @@ sub said {
                     $commit->{nins}, $commit->{ndel},
                     $self->colour(query => "reset"),
                     $self->colour(query => "url"),
-                    "http://git.develz.org/?p=crawl.git;a=commitdiff;h=$abbr",
+                    $self->make_web_uri($abbr),
                     $self->colour(query => "reset"),
                 )
             );
@@ -208,7 +214,7 @@ sub tick {
                                 $commit->{nins}, $commit->{ndel},
                                 $self->colour(announce => "reset"),
                                 $self->colour(announce => "url"),
-                                "http://git.develz.org/?p=crawl.git;a=commitdiff;h=$abbr",
+                                $self->make_web_uri($abbr),
                                 $self->colour(announce => "reset"),
                             )
                         );
