@@ -70,6 +70,7 @@ has heads => (
 
 my %colour_codes = (
     author => 3,
+    author_query => 7,
     branch => 7,
     stats => 10,
     url => 13
@@ -115,7 +116,7 @@ sub said {
             $self->say(@keys,
                 sprintf(
                     "%s%s%s * %s%s%s:%s %s%s%s %s(%s, %s file%s, %s+ %s-)%s %s%s%s",
-                    $self->colour(query => "author"), $commit->{author},
+                    $self->colour(query => "author_query"), $commit->{author},
                     $self->colour(query => "reset"),
                     $self->colour(query => "rev"), $rev,
                     $self->colour(query => "colon"),
