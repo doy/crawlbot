@@ -29,7 +29,13 @@ has data_dir => (
 has update_time => (
     is      => 'ro',
     isa     => 'Int',
-    default => 300,
+    default => 5,
+);
+
+has force_update_frequency => (
+    is      => 'ro',
+    isa     => 'Int',
+    default => 60,  # Measured in ticks
 );
 
 has plugins => (
@@ -58,8 +64,18 @@ before say => sub {
     $_->sent({%params, who => $self->nick}) for @{ $self->plugins };
 };
 
+my $tickcount = 0;
 sub tick {
     my $self = shift;
+    my $pokefile = File::Spec->catfile($self->data_dir, "poke");
+
+    if (++$tickcount < $self->force_update_frequency and ! -f $pokefile) {
+        return $self->update_time;
+    } else {
+        $tickcount = 0;
+        -f $pokefile and unlink $pokefile;
+    }
+
     print STDERR "Checking for updates at " . localtime() . ":\n";
     for (@{ $self->plugins }) {
         print STDERR " --- " . ref($_);
