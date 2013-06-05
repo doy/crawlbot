@@ -20,6 +20,8 @@ wensley = function(logurl, args) {
         data = data.replace(/</g, '&lt;');
         data = data.replace(/>/g, '&gt;');
 
+        data = data.replace(/^([0-9:]+ +-\!- .*)/gm, '<span class="noise">$1</span>');
+
         // Ugh: try to handle colour and bold tags.
         data = data.replace(/\cC(?:0(\d)|([1-9]\d?))(?:,(?:0(\d)|([1-9]\d?)))?([^\cC\cO\n]*\cO?)/g, '<span class="fg$1$2 bg$3$4">$5</span>');
         data = data.replace(/\cB([^\cB\cO\n]*)\cO?/g, '<b>$1</b>');
@@ -36,6 +38,7 @@ wensley = function(logurl, args) {
 <style type="text/css">
     h3 { margin-bottom: 0em; }
     .irc { font-family: monospace; }
+    .noise { color: #c0c0c0; }
     .fg0 { color: white; }
     .fg1 { color: black; }
     .fg2 { color: #4040ff; }
