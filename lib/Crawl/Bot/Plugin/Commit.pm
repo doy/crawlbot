@@ -76,10 +76,16 @@ my %colour_codes = (
     url => 13
 );
 
-sub make_web_uri {
+sub make_commit_uri {
     my $self = shift;
     my $commit = shift;
     return "http://s-z.org/neil/git/?p=crawl.git;a=commitdiff;h=$commit";
+}
+
+sub make_branch_uri {
+    my $self = shift;
+    my $branch = shift;
+    return "http://s-z.org/neil/git/?p=crawl.git;a=log;h=refs/heads/$branch";
 }
 
 sub colour {
@@ -109,7 +115,7 @@ sub said {
 
     my @keys = (who => $args->{who}, channel => $args->{channel}, "body");
 
-    if ($args->{body} =~ /^%git(?:\s+(.*))?$/) {
+    if ($args->{body} =~ /^\%git(?:\s+(.*))?$/) {
         my $rev = $1;
         $rev = "HEAD" unless $rev;
         my $commit = $self->parse_commit($rev);
@@ -134,7 +140,7 @@ sub said {
                     $commit->{nins}, $commit->{ndel},
                     $self->colour(query => "reset"),
                     $self->colour(query => "url"),
-                    $self->make_web_uri($abbr),
+                    $self->make_commit_uri($abbr),
                     $self->colour(query => "reset"),
                 )
             );
@@ -142,6 +148,8 @@ sub said {
             my $ev = $? >> 8;
             $self->say(@keys, "Could not find commit $rev (git returned $ev)");
         }
+    } elsif ($args->{body} =~ /^\%branch\s+(.*)$/) {
+        $self->say(@keys, "Branch $1: " . $self->make_branch_uri($1));
     }
 }
 
@@ -227,7 +235,7 @@ sub tick {
                                 $commit->{nins}, $commit->{ndel},
                                 $self->colour(announce => "reset"),
                                 $self->colour(announce => "url"),
-                                $self->make_web_uri($abbr),
+                                $self->make_commit_uri($abbr),
                                 $self->colour(announce => "reset"),
                             )
                         );
