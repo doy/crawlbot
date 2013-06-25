@@ -170,6 +170,18 @@ sub tick {
             $self->say_all("New branch created: $branch ($nrev commit$pl)");
         }
 
+        # Announce playable branches in ##crawl, all branches in ##crawl-dev.
+        my $say;
+        if ($branch =~ /^(?:master|stone_soup-.*)$/) {
+            $say = sub {
+                $self->say_all(@_)
+            }
+        } else {
+            $say = sub {
+                $self->say_main(@_)
+            }
+        }
+
         if ($self->announce_commits) {
                 my %commits = map { $_, $self->parse_commit($_) } @revs;
 
@@ -178,7 +190,8 @@ sub tick {
                         && $commits{$_}->{body}    !~ /\(cherry picked from / } @revs;
                 $cherry_picks -= @revs;
                 my $pl = $cherry_picks == 1 ? "" : "s";
-                $self->say_all("Cherry-picked $cherry_picks commit$pl into $branch")
+
+                $say->("Cherry-picked $cherry_picks commit$pl into $branch")
                     if $cherry_picks > 0;
 
                 my $count = 0;
@@ -186,7 +199,7 @@ sub tick {
                         # If it's just one more than the announce limit, don't bother with
                         # the message and announce the last commit anyway.
                         if (++$count > $self->announce_limit and scalar @revs > 1) {
-                            $self->say_all("... and " . (scalar @revs - $count + 1) . " more commits");
+                            $say->("... and " . (scalar @revs - $count + 1) . " more commits");
                             last;
                         }
                         my $commit = $commits{$rev};
@@ -197,7 +210,7 @@ sub tick {
 
                         my $revname = $commit->{revname} || "r$abbr";
 
-                        $self->say_all(
+                        $say->(
                             sprintf(
                                 "%s%s%s %s%s%s* %s%s%s:%s %s%s%s %s(%s, %s file%s, %s+ %s-)%s %s%s%s",
                                 $self->colour(announce => "author"), $commit->{author},
