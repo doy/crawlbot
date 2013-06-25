@@ -106,4 +106,13 @@ sub say_all {
     ) for $self->channels;
 }
 
+sub say_main {
+    my $self = shift;
+    my ($message) = @_;
+    $self->say(
+        channel => ($self->channels)[0],
+        body    => $message,
+    );
+}
+
 1;
