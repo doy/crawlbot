@@ -71,6 +71,7 @@ has heads => (
 my %colour_codes = (
     author => 3,
     author_query => 7,
+    committer => 2,
     branch => 7,
     stats => 10,
     url => 13
@@ -124,11 +125,17 @@ sub said {
             my $pl = ($commit->{nfiles} == 1 ? "" : "s");
 
             my $rev = $commit->{revname} || "r$abbr";
+            my $committer = "";
+            if ($commit->{committer} ne $commit->{author}) {
+                    $committer = " {" . $commit->{committer} . "}";
+            }
 
             $self->say(@keys,
                 sprintf(
-                    "%s%s%s * %s%s%s:%s %s%s%s %s(%s, %s file%s, %s+ %s-)%s %s%s%s",
+                    "%s%s%s%s%s%s * %s%s%s:%s %s%s%s %s(%s, %s file%s, %s+ %s-)%s %s%s%s",
                     $self->colour(query => "author_query"), $commit->{author},
+                    $self->colour(query => "reset"),
+                    $self->colour(query => "committer"), $committer,
                     $self->colour(query => "reset"),
                     $self->colour(query => "rev"), $rev,
                     $self->colour(query => "colon"),
@@ -217,11 +224,17 @@ sub tick {
                         my $pl = ($commit->{nfiles} == 1 ? "" : "s");
 
                         my $revname = $commit->{revname} || "r$abbr";
+                        my $committer = "";
+                        if ($commit->{committer} ne $commit->{author}) {
+                                $committer = " {" . $commit->{committer} . "}";
+                        }
 
                         $say->(
                             sprintf(
-                                "%s%s%s %s%s%s* %s%s%s:%s %s%s%s %s(%s, %s file%s, %s+ %s-)%s %s%s%s",
+                                "%s%s%s%s%s%s %s%s%s* %s%s%s:%s %s%s%s %s(%s, %s file%s, %s+ %s-)%s %s%s%s",
                                 $self->colour(announce => "author"), $commit->{author},
+                                $self->colour(announce => "reset"),
+                                $self->colour(announce => "committer"), $committer,
                                 $self->colour(announce => "reset"),
                                 $self->colour(announce => "branch"), $br,
                                 $self->colour(announce => "reset"),
@@ -257,7 +270,7 @@ sub parse_commit {
     my ($rev) = @_;
     my $dir = pushd($self->checkout);
 
-    CORE::open(F, "-|:encoding(UTF-8)", qw(git log -1 --shortstat --pretty=format:%H%x00%aN%x00%s%x00%b%x00%ar%x00), $rev) or return undef;
+    CORE::open(F, "-|:encoding(UTF-8)", qw(git log -1 --shortstat --pretty=format:%H%x00%aN%x00%cN%x00%s%x00%b%x00%ar%x00), $rev) or return undef;
     local $/ = undef;
     my $info = <F>;
     CORE::close(F) or return undef;
@@ -270,23 +283,24 @@ sub parse_commit {
         CORE::close(F);
     }
 
-    $info =~ /(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*)/s or return undef;
-    my ($hash, $author, $subject, $body, $date, $stat) = ($1, $2, $3, $4, $5, $6);
+    $info =~ /(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*)/s or return undef;
+    my ($hash, $author, $committer, $subject, $body, $date, $stat) = ($1, $2, $3, $4, $5, $6, $7);
 
     my ($nfiles, $nins, $ndel);
     ($stat =~ /(\d+) files changed/) and $nfiles = $1;
     ($stat =~ /(\d+) insertions/) and $nins = $1;
     ($stat =~ /(\d+) deletions/) and $ndel = $1;
     return {
-        hash    => $hash,
-        author  => $author,
-        subject => $subject,
-        body    => $body,
-        date    => $date,
-        nfiles  => $nfiles,
-        nins    => $nins,
-        ndel    => $ndel,
-        revname => $revname,
+        hash      => $hash,
+        author    => $author,
+        committer => $committer,
+        subject   => $subject,
+        body      => $body,
+        date      => $date,
+        nfiles    => $nfiles,
+        nins      => $nins,
+        ndel      => $ndel,
+        revname   => $revname,
     };
 }
 
