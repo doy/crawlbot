@@ -16,6 +16,12 @@ has announce_commits => (
     default => 1,
 );
 
+has abbrev_cherry_picks => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
+);
+
 # Maximum number of commits to announce from a large batch.  If there
 # are exactly announce_limits + 1 new commits, all of them will be
 # announced, to avoid a useless "and 1 more commit" message.
@@ -124,7 +130,7 @@ sub said {
             my $abbr = substr($commit->{hash}, 0, 12);
             my $pl = ($commit->{nfiles} == 1 ? "" : "s");
 
-            my $rev = $commit->{revname} || "r$abbr";
+            my $rev = $commit->{revname} || "$abbr";
             my $committer = "";
             if ($commit->{committer} ne $commit->{author}) {
                     $committer = " {" . $commit->{committer} . "}";
@@ -200,14 +206,19 @@ sub tick {
         if ($self->announce_commits) {
                 my %commits = map { $_, $self->parse_commit($_) } @revs;
 
-                my $cherry_picks = @revs;
-                @revs = grep { $commits{$_}->{subject} !~ /\(cherry picked from /
-                        && $commits{$_}->{body}    !~ /\(cherry picked from / } @revs;
-                $cherry_picks -= @revs;
-                my $pl = $cherry_picks == 1 ? "" : "s";
+                if ($self->abbrev_cherry_picks)
+                {
+                    my $cherry_picks = @revs;
+                    @revs = grep {
+                        $commits{$_}->{subject} !~ /\(cherry picked from /
+                        && $commits{$_}->{body} !~ /\(cherry picked from /
+                    } @revs;
+                    $cherry_picks -= @revs;
+                    my $pl = $cherry_picks == 1 ? "" : "s";
 
-                $say->("Cherry-picked $cherry_picks commit$pl into $branch")
-                    if $cherry_picks > 0;
+                    $say->("Cherry-picked $cherry_picks commit$pl into $branch")
+                        if $cherry_picks > 0;
+                }
 
                 my $count = 0;
                 for my $rev (reverse @revs) {
@@ -223,7 +234,7 @@ sub tick {
                         my $abbr = substr($commit->{hash}, 0, 12);
                         my $pl = ($commit->{nfiles} == 1 ? "" : "s");
 
-                        my $revname = $commit->{revname} || "r$abbr";
+                        my $revname = $commit->{revname} || "$abbr";
                         my $committer = "";
                         if ($commit->{committer} ne $commit->{author}) {
                                 $committer = " {" . $commit->{committer} . "}";
