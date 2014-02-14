@@ -222,9 +222,10 @@ sub tick {
 
                 my $count = 0;
                 for my $rev (reverse @revs) {
-                        # If it's just one more than the announce limit, don't bother with
-                        # the message and announce the last commit anyway.
-                        if (++$count > $self->announce_limit and scalar @revs > 1) {
+                        # If it's just one more than the announce limit, don't
+                        # bother with the message and announce the last commit
+                        # anyway.
+                        if (++$count > $self->announce_limit and scalar @revs > $count) {
                             $say->("... and " . (scalar @revs - $count + 1) . " more commits");
                             last;
                         }
