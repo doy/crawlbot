@@ -19,7 +19,7 @@ has announce_commits => (
 has abbrev_cherry_picks => (
     is      => 'rw',
     isa     => 'Bool',
-    default => 0,
+    default => 1,
 );
 
 # Maximum number of commits to announce from a large batch.  If there
