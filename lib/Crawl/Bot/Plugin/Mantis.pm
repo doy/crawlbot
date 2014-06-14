@@ -27,7 +27,7 @@ sub said {
     my @keys = (who => $args->{who}, channel => $args->{channel}, "body");
 
     if ($args->{body} =~ /^%bug (\d+)$/) {
-        $self->say(@keys, "https://crawl.develz.org/mantis/view.php?id=$1");
+        $self->say(@keys, "\00313https://crawl.develz.org/mantis/view.php?id=$1\017");
     }
 }
 
@@ -42,7 +42,7 @@ sub tick {
         (my $title = $item->{title}) =~ s/\d+: //;
         my $link = $item->{link};
         (my $user = $item->{creator}) =~ s/ <.*?>$//;
-        $self->say_all("$title <$link> by $user");
+        $self->say_all("$title \00313$link\017 by $user");
         $self->add_item($id);
     });
     $self->save_item_cache;
