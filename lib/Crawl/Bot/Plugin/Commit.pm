@@ -298,7 +298,7 @@ sub parse_commit {
     $info =~ /(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*?)\x00(.*)/s or return undef;
     my ($hash, $author, $committer, $subject, $body, $date, $stat) = ($1, $2, $3, $4, $5, $6, $7);
 
-    my ($nfiles, $nins, $ndel);
+    my ($nfiles, $nins, $ndel) = (0, 0, 0);
     ($stat =~ /(\d+) files? changed/) and $nfiles = $1;
     ($stat =~ /(\d+) insertions?/) and $nins = $1;
     ($stat =~ /(\d+) deletions?/) and $ndel = $1;
