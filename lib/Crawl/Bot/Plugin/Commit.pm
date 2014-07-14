@@ -299,9 +299,9 @@ sub parse_commit {
     my ($hash, $author, $committer, $subject, $body, $date, $stat) = ($1, $2, $3, $4, $5, $6, $7);
 
     my ($nfiles, $nins, $ndel);
-    ($stat =~ /(\d+) files changed/) and $nfiles = $1;
-    ($stat =~ /(\d+) insertions/) and $nins = $1;
-    ($stat =~ /(\d+) deletions/) and $ndel = $1;
+    ($stat =~ /(\d+) files? changed/) and $nfiles = $1;
+    ($stat =~ /(\d+) insertions?/) and $nins = $1;
+    ($stat =~ /(\d+) deletions?/) and $ndel = $1;
     return {
         hash      => $hash,
         author    => $author,
