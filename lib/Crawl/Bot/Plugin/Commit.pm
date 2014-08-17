@@ -10,6 +10,12 @@ has repo_uri => (
     default => 'git://gitorious.org/crawl/crawl.git',
 );
 
+has mirror_uri => (
+    is      => 'ro',
+    isa     => 'Str',
+    default => 'git@github.com:crawl-ref/crawl-ref',
+);
+
 has announce_commits => (
     is      => 'rw',
     isa     => 'Bool',
@@ -171,6 +177,11 @@ sub tick {
     my $dir = pushd($self->checkout);
     warn "fetch";
     system('git fetch');
+
+    if (my $mirror = $self->mirror_uri) {
+        system("git push --mirror $mirror");
+    }
+
     for my $branch ($self->branches) {
         my $old_head = $self->head($branch) || '';
         warn "rev-parse $branch";
